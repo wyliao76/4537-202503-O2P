@@ -4,31 +4,19 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
 
+const DatabaseManager = require('./database');
+
 const app = express();
 app.use(express.json()); 
 app.use(cors());
 
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-const mongoURI = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`;
-
-mongoose.connect(mongoURI)
-.then(() => {
-    console.log("MongoDB connected successfully!");
-}).catch(err => {
-    console.error("MongoDB connection error:", err);
-});
-
-const User = mongoose.model("User", new mongoose.Schema({
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-    role: { type: String, default: "user" },
-    api_tokens: { type: Number, default: 0 }
-}));
-    
+const dbManager = new DatabaseManager();
+dbManager.dbConnect();
 
 app.get("/api/users", async (req, res) => {
-    const users = await User.find();
+    const users = await dbManager.User.find();
     res.json(users);
 });
 
