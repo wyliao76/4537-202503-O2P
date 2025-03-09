@@ -23,6 +23,46 @@ class AIManager {
         
         return completion.choices[0].message.content;
     }
+
+    async generateQuestionBatch() {
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                {
+                    role: "user",
+                    content: `Generate 3 personality questions with 4 multiple-choice answers each.
+                    
+    Format **strictly** like this:
+    
+    1: <your question>
+    A) <answer>
+    B) <answer>
+    C) <answer>
+    D) <answer>
+    
+    2: <your question>
+    A) <answer>
+    B) <answer>
+    C) <answer>
+    D) <answer>
+    
+    3: <your question>
+    A) <answer>
+    B) <answer>
+    C) <answer>
+    D) <answer>
+    
+    **Do NOT add extra text, explanations, or greetings.**`
+                },
+            ]
+        });
+    
+        console.log("In func: " + completion.choices[0].message.content);
+        
+        return completion.choices[0].message.content;
+    }
+    
 }
 
 module.exports = AIManager;

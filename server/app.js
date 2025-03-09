@@ -27,6 +27,11 @@ app.post("/api/question", async(req, res) => {
     res.json( response );
 });
 
+app.post("/api/questionBatch", async(req, res) => {
+    const response = await aiManager.generateQuestionBatch();
+    res.json( response );
+});
+
 app.post("/users", async (req, res) => {
     const newUser = new User(req.body);
     await newUser.save();
