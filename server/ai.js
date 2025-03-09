@@ -5,25 +5,26 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI
 });
 
-class aiManager {
+class AIManager {
 
-    async sendTextRequest() {
+    async generateSingleQuestion() {
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
                 { role: "system", content: "You are a helpful assistant." },
                 {
                     role: "user",
-                    content: "Write a haiku about recursion in programming.",
+                    content: "Give me a general question that reaveals something about my personallity. Then give 4 multiple choice answers. Do not add sure to the start of the response only the question and the answers",
                 },
             ]
         });
+
+        console.log("In func: " + completion.choices[0].message.content)
         
-        console.log(completion.choices[0].message.content);
+        return completion.choices[0].message.content;
     }
 }
 
-ai = new aiManager();
-ai.sendTextRequest();
+module.exports = AIManager;
 
 
