@@ -22,13 +22,21 @@ app.get("/api/users", async (req, res) => {
     res.json(users);
 });
 
-app.post("/api/question", async(req, res) => {
-    const response = await aiManager.generateSingleQuestion();
+app.post("/api/questions", async(req, res) => {
+    const response = await aiManager.generateQuestionBatch();
     res.json( response );
 });
 
-app.post("/api/questionBatch", async(req, res) => {
-    const response = await aiManager.generateQuestionBatch();
+app.post("/api/persona", async(req, res) => {
+    const answerObjs = req.body;
+    const response = await aiManager.generatePersona(JSON.stringify(answerObjs));
+    res.json( response );
+});
+
+app.post("/api/image", async(req, res) => {
+    const answerObjs = req.body;
+    const response = await aiManager.generateImage(JSON.stringify(answerObjs));
+    console.log("response being sent: " + response);
     res.json( response );
 });
 

@@ -1,4 +1,5 @@
 const { OpenAI } = require("openai");
+const axios = require('axios');
 require("dotenv").config();
 
 const openai = new OpenAI({
@@ -7,19 +8,55 @@ const openai = new OpenAI({
 
 class AIManager {
 
-    async generateSingleQuestion() {
+    async generateImage(userAnswers) {
+
+        let imagePrompt;
+
+        const completion1 = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "You are a helpful assistant." },
+                {
+                    role: "user",
+                    content: `Based on the following answers to personality questions,
+                    generate a prompt that will generate an image of a superhero that fits this persona: ${userAnswers}`
+                },
+            ]
+        });
+
+        imagePrompt = completion1.choices[0].message.content;
+
+        const completion2 = await axios({
+            method: 'POST',
+            url: 'https://api.openai.com/v1/images/generations',
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENAI}`,
+            },
+            data: {
+                prompt: `${imagePrompt}`,
+                n: 1,
+                size: "256x256"
+            }
+        });
+
+        const imageUrl = completion2.data.data[0].url;
+        return imageUrl;
+    }
+
+    async generatePersona(userAnswers) {
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
                 { role: "system", content: "You are a helpful assistant." },
                 {
                     role: "user",
-                    content: "Give me a general question that reaveals something about my personallity. Then give 4 multiple choice answers. Do not add sure to the start of the response only the question and the answers",
+                    content: `Based on the following answers to personality questions,
+                    generate a short persona on a superhero: ${userAnswers}`
                 },
             ]
         });
 
-        console.log("In func: " + completion.choices[0].message.content)
+        console.log("In persona func: " + completion.choices[0].message.content);
         
         return completion.choices[0].message.content;
     }
