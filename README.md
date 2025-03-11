@@ -14,6 +14,12 @@ O2P
 ## Project Technologies
 an easy-to-find labeled section called Technologies describes everything the team used for this project. It includes tools, languages, version numbers... everything!
 
+## Docker Compose
+docker-compose up -d
+
+## Access Mongo
+docker exec -it mongodb_container mongosh -u admin -p password
+
 ### Frontend
 * HTML5
 * CSS3
