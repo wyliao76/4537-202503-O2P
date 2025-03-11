@@ -21,7 +21,7 @@ const aiManager = new AIManager()
 
 const mongoUrl = process.env.NODE_ENV === 'local' ?
     `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}` +
-    `@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin&replicaSet=rs0&retryWrites=true&w=majority&directConnection=true` :
+    `@${process.env.MONGO_HOST}:${process.env.DATABASE_PORT}/${process.env.MONGO_DB}?authSource=admin&replicaSet=rs0&retryWrites=true&w=majority&directConnection=true` :
     `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}/?retryWrites=true&w=majority&appName=`
 
 console.log(mongoUrl)
