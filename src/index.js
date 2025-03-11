@@ -1,58 +1,65 @@
-const express = require('express')
 require('dotenv').config({ path: `${__dirname}/.env.${process.env.NODE_ENV}` })
-const cors = require('cors')
-const path = require('path')
+const mongoose = require('mongoose')
+const { server, app, mongoUrl } = require('./expressServer')
 
-const DatabaseManager = require('./database')
-const AIManager = require('./ai')
+const mongoOptions = {
+    user: process.env.DATABASE_USERNAME,
+    pass: process.env.DATABASE_PASSWORD,
+    autoIndex: process.env.AUTO_INDEX || false,
+    dbName: process.env.DATABASE_NAME,
+    maxPoolSize: 100,
+    ssl: process.env.NODE_ENV === 'local' ? false : true,
+    // sslValidate: false,
+}
 
-const app = express()
-app.use(express.json())
-app.use(cors())
+const launch = async () => {
+    try {
+        await Promise.all([
+            mongoose.connect(mongoUrl, mongoOptions),
+        ])
+        console.log('MongoDB connect successful.')
+        if (process.send) process.send('ready')
 
-app.use(express.static(path.join(__dirname, '../frontend')))
+        server.listen(process.env.PORT || 3000, () => {
+            const { address, port } = server.address()
+            console.log('Server is listening at http://%s:%s', address, port)
+            console.log(`Process is running now on ${app.get('env')}. (pid: ${process.pid})`)
+        })
+    } catch (err) {
+        console.log(err)
+        console.log('MongoDB or MQ connection failed')
+        process.exit(1)
+    }
+}
 
-const dbManager = new DatabaseManager()
-dbManager.dbConnect()
+const mongoDBShutdown = async () => {
+    await mongoose.connection.close(false)
+    console.log('MongoDb connection closed.')
+}
 
-const aiManager = new AIManager()
-
-app.get('/api/users', async (req, res) => {
-    const users = await dbManager.User.find()
-    res.json(users)
+process.on('SIGINT', () => {
+    console.log('SIGINT signal received.')
+    console.log('Closing http server...')
+    server.close(async (err) => {
+        if (err) {
+            console.error(err)
+            process.exit(1)
+        }
+        console.log('Http server closed.')
+        try {
+            await Promise.all([
+                mongoDBShutdown(),
+            ])
+            process.exit(0)
+        } catch (err) {
+            console.error(err)
+            process.exit(1)
+        }
+    })
 })
 
-app.post('/api/questions', async (req, res) => {
-    const response = await aiManager.generateQuestionBatch()
-    res.json(response)
+process.on('uncaughtException', (err) => {
+    console.log(err)
 })
 
-app.post('/api/persona', async (req, res) => {
-    const answerObjs = req.body
-    const response = await aiManager.generatePersona(JSON.stringify(answerObjs))
-    res.json(response)
-})
-
-app.post('/api/image', async (req, res) => {
-    const answerObjs = req.body
-    const response = await aiManager.generateImage(JSON.stringify(answerObjs))
-    console.log('response being sent: ' + response)
-    res.json(response)
-})
-
-app.post('/users', async (req, res) => {
-    const newUser = new User(req.body)
-    await newUser.save()
-    res.status(201).send('User created!')
-})
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/index.html'))
-})
-
-app.get('/questions', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/questions.html'))
-})
-
-
-app.listen(process.env.port || 3000, () => console.log('Server purring on port 3000'))
+launch()

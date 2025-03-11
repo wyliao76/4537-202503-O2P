@@ -7,8 +7,6 @@ const openai = new OpenAI({
 
 class AIManager {
     async generateImage(userAnswers) {
-        let imagePrompt
-
         const completion1 = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
@@ -21,7 +19,7 @@ class AIManager {
             ],
         })
 
-        imagePrompt = completion1.choices[0].message.content
+        const imagePrompt = completion1.choices[0].message.content
 
         const completion2 = await axios({
             method: 'POST',
@@ -99,5 +97,3 @@ class AIManager {
 }
 
 module.exports = AIManager
-
-
