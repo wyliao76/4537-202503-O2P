@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt')
 
 
 const registerPOST = async (email, password) => {
-    const SALT_ROUNDS = 10;
+    const SALT_ROUNDS = 10
     const hashedPass = await bcrypt.hash(password, SALT_ROUNDS)
 
-    await usersModel.countDocuments({email: email}).then((count) => {
-        if(count) {
-            throw new Error("Account already registered with this email")
+    await usersModel.countDocuments({ email: email }).then((count) => {
+        if (count) {
+            throw new Error('Account already registered with this email')
         }
     })
 

@@ -6,7 +6,7 @@ const registerGET = (req, res) => {
 
 const registerPOST = async (req, res, next) => {
     try {
-        const {email, password} = req.body
+        const { email, password } = req.body
 
         const schema = Joi.object({
             email: Joi.string().max(24).required().email().messages({
@@ -15,25 +15,25 @@ const registerPOST = async (req, res, next) => {
                 'string.empty': 'Email cannot be empty',
             }),
             password: Joi.string().required().messages({
-                'string.empty': 'Password cannot be an empty'
-            })
+                'string.empty': 'Password cannot be an empty',
+            }),
         })
-        await schema.validateAsync({email, password}, {abortEarly: false})
+        await schema.validateAsync({ email, password }, { abortEarly: false })
 
         await authService.registerPOST(email.toLowerCase(), password)
 
-        res.status(200).json({msg: 'ok'})
+        res.status(200).json({ msg: 'ok' })
     } catch (err) {
-        if(err.isJoi) {
-            const msg = err.details.map(detail => detail.message)
+        if (err.isJoi) {
+            const msg = err.details.map((detail) => detail.message)
 
             return res.status(400).json({
-                msg: msg
-            });
-        } 
+                msg: msg,
+            })
+        }
         return res.status(409).json({
-            msg: err.message
-        });
+            msg: err.message,
+        })
     }
 }
 
