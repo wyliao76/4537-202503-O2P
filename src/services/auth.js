@@ -26,10 +26,7 @@ const loginPOST = async (email, password) => {
     if (!await bcrypt.compare(password, user.password)) {
         throw new CustomError('403', 'Invalid password')
     }
-    const token = jwt.sign({ email: user.email }, process.env.SECRET, { expiresIn: Number(process.env.TOKEN_EXPIRATION_IN_SEC) })
-
-    await auth.addToken(user.email, token)
-    return token
+    return auth.addToken(user.email)
 }
 
 const logoutGET = async (token) => {
