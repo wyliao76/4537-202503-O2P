@@ -1,7 +1,7 @@
 require('dotenv').config({ path: `${__dirname}/.env.${process.env.NODE_ENV}` })
 const mongoose = require('mongoose')
 const { server, app } = require('./expressServer')
-const { auth } = require('./utilities')
+const { redis } = require('./utilities')
 
 const mongoOptions = {
     autoIndex: process.env.AUTO_INDEX || false,
@@ -17,7 +17,7 @@ const launch = async () => {
     try {
         await Promise.all([
             mongoose.connect(process.env.MONGODB_URL, mongoOptions),
-            auth.connect(),
+            redis.connect(),
         ])
         console.log('MongoDB connect successful.')
         if (process.send) process.send('ready')
@@ -51,7 +51,7 @@ process.on('SIGINT', () => {
         try {
             await Promise.all([
                 mongoDBShutdown(),
-                auth.close(),
+                redis.close(),
             ])
             process.exit(0)
         } catch (err) {
