@@ -1,9 +1,10 @@
 const usersModel = require('../models/users')
 const bcrypt = require('bcrypt')
-
+const SALT_ROUNDS = 10
+const jwt = require('jsonwebtoken')
+const { auth, CustomError } = require('../utilities')
 
 const registerPOST = async (email, password) => {
-    const SALT_ROUNDS = 10
     const hashedPass = await bcrypt.hash(password, SALT_ROUNDS)
 
     await usersModel.countDocuments({ email: email }).then((count) => {
@@ -20,10 +21,21 @@ const registerPOST = async (email, password) => {
     await usersModel.create(user)
 }
 
-const loginPOST = async (loginId, password) => {
+const loginPOST = async (email, password) => {
+    const user = await usersModel.findOne({ email: email }, { email: 1, password: 1 }).lean()
+    if (!await bcrypt.compare(password, user.password)) {
+        throw new CustomError('403', 'Invalid password')
+    }
+    const token = jwt.sign({ email: user.email }, process.env.SECRET, { expiresIn: Number(process.env.TOKEN_EXPIRATION_IN_SEC) })
+
+    await auth.addToken(user.email, token)
+    return token
 }
 
-const logoutGET = (req) => {
+const logoutGET = async (token) => {
+    const email = await auth.verify(token)
+    await auth.removeToken(email)
+    return true
 }
 
 const resetPasswordPOST = async ({ userId, password }) => {

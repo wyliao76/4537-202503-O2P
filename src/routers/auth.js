@@ -3,12 +3,7 @@ const router = new express.Router()
 const authController = require('../controllers/auth')
 // const { hasLoggedIn } = require('../utilities/index')
 
-
-// router.get('/register', hasLoggedIn, authController.registerGET)
-
 router.post('/register', authController.registerPOST)
-
-router.get('/login', authController.loginGET)
 
 router.post('/login', authController.loginPOST)
 

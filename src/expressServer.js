@@ -4,18 +4,28 @@ const { authRouter } = require('./routers')
 const usersModel = require('./models/users')
 const AIManager = require('./ai')
 const cors = require('cors')
+const { CustomError } = require('./utilities')
 
 const app = express()
 const server = require('http').createServer(app)
 app.use(compression())
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static(__dirname + '/public'))
+
+const whitelist = [process.env.FRONTEND_ORIGIN, 'null']
 app.use(cors({
-    origin: process.env.FRONTEND_ORIGIN,
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type'],
+    origin: (origin, callback) => {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new CustomError('400', 'Not allowed by CORS'))
+        }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
 }))
+
 const aiManager = new AIManager()
 
 app.use('/', authRouter)
@@ -44,12 +54,6 @@ app.post('/api/image', async (req, res) => {
     const response = await aiManager.generateImage(JSON.stringify(answerObjs))
     console.log('response being sent: ' + response)
     res.json(response)
-})
-
-app.post('/users', async (req, res) => {
-    const newUser = new User(req.body)
-    await newUser.save()
-    res.status(201).send('User created!')
 })
 
 app.get('*', (req, res) => {
