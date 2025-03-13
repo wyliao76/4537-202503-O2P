@@ -1,13 +1,15 @@
 const express = require('express')
 const compression = require('compression')
+const cookieParser = require('cookie-parser')
 const { authRouter } = require('./routers')
 const usersModel = require('./models/users')
 const AIManager = require('./ai')
 const cors = require('cors')
-const { CustomError } = require('./utilities')
+const { CustomError, auth } = require('./utilities')
 
 const app = express()
 const server = require('http').createServer(app)
+app.use(cookieParser())
 app.use(compression())
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
@@ -29,6 +31,11 @@ app.use(cors({
 const aiManager = new AIManager()
 
 app.use('/', authRouter)
+
+app.get('/isLogin', auth.isLogin, (_, res) => {
+    return res.status(200).send('ok')
+})
+
 app.get('/health', (_, res) => {
     return res.status(200).send('ok')
 })

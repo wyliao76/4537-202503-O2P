@@ -1,8 +1,7 @@
 const usersModel = require('../models/users')
 const bcrypt = require('bcrypt')
 const SALT_ROUNDS = 10
-const jwt = require('jsonwebtoken')
-const { auth, CustomError } = require('../utilities')
+const { auth, CustomError, redis } = require('../utilities')
 
 const registerPOST = async (email, password) => {
     const hashedPass = await bcrypt.hash(password, SALT_ROUNDS)
@@ -26,12 +25,17 @@ const loginPOST = async (email, password) => {
     if (!await bcrypt.compare(password, user.password)) {
         throw new CustomError('403', 'Invalid password')
     }
+    // revoke token if exists
+    const token = await redis.client.get(user.email)
+    if (token) {
+        console.log(`token exists: ${token}`)
+        await auth.revokeToken(token)
+    }
     return auth.addToken(user.email)
 }
 
 const logoutGET = async (token) => {
-    const email = await auth.verify(token)
-    await auth.removeToken(email)
+    await auth.revokeToken(token)
     return true
 }
 
