@@ -1,14 +1,14 @@
-const Redis = require('ioredis')
 const jwt = require('jsonwebtoken')
 const { CustomError } = require('./customError')
+const redis = require('./redis')
 
 const addToken = async (email, token) => {
     const expirationInSec = Number(process.env.TOKEN_EXPIRATION_IN_SEC || '86400')
-    await auth.redis.setex(email, expirationInSec, token)
+    await redis.client.setex(email, expirationInSec, token)
 }
 
 const removeToken = (email) => {
-    return auth.redis.del(email)
+    return redis.client.del(email)
 }
 
 const verify = async (token) => {
@@ -21,23 +21,8 @@ const verify = async (token) => {
     }
 }
 
-const connect = () => {
-    auth.redis = new Redis(process.env.REDIS_HOST)
-    console.log('Redis connected.')
-}
-
-const close = async () => {
-    await auth.redis.quit()
-    console.log('Redis closed.')
-}
-
-const auth = {
-    redis: null,
-    connect,
-    close,
+module.exports = {
     addToken,
     removeToken,
     verify,
 }
-
-module.exports = auth

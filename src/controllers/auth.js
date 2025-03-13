@@ -1,6 +1,5 @@
 const { authService } = require('../services/index')
 const Joi = require('joi')
-const { auth } = require('../utilities')
 
 const registerPOST = async (req, res, next) => {
     try {
@@ -63,7 +62,7 @@ const loginPOST = async (req, res, next) => {
 const logoutGET = async (req, res, next) => {
     try {
         const { authorization = '' } = req.headers
-        console.log(authorization)
+
         await authService.logoutGET(authorization)
         return res.status(200).json({ msg: 'ok' })
     } catch (error) {
