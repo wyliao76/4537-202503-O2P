@@ -32,4 +32,3 @@ const UsersSchema = new Schema({
 })
 
 module.exports = mongoose.model('Users', UsersSchema)
-
