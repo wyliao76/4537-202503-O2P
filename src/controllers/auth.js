@@ -63,9 +63,9 @@ const loginPOST = async (req, res, next) => {
 
 const logoutGET = async (req, res, next) => {
     try {
-        const { authorization = '' } = req.headers
+        const { token } = req.cookies || {}
 
-        await authService.logoutGET(authorization)
+        await authService.logoutGET(token)
         return res.status(200).json({ msg: 'ok' })
     } catch (error) {
         next(error)
