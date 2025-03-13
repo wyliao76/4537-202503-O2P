@@ -1,0 +1,36 @@
+networks:
+  proxy:
+    name: fursona
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.90.0/24
+
+services:
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
+    networks:
+      - proxy
+
+  fursona:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fursona
+    restart: always
+    networks:
+      - proxy
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      MONGODB_URL: ${MONGODB_URL}
+      PORT: ${PORT}
+      OPENAI: ${OPENAI}
+      AUTO_INDEX: ${AUTO_INDEX}

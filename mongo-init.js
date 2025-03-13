@@ -27,7 +27,7 @@ const isReady = () => {
         adminDB.auth('root', '123456')
         print('Authenticated as root user.')
 
-        const dbName = 'test'
+        const dbName = 'myapp'
         adminDB.createUser({
             user: 'admin',
             pwd: 'password',
