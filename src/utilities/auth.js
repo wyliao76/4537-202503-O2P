@@ -2,9 +2,14 @@ const jwt = require('jsonwebtoken')
 const { CustomError } = require('./customError')
 const redis = require('./redis')
 
-const addToken = async (email, token) => {
+const addToken = async (email) => {
+    console.log(email)
+    const token = await jwt.sign({ email: email }, process.env.SECRET, { expiresIn: Number(process.env.TOKEN_EXPIRATION_IN_SEC) })
+    console.log(token)
+
     const expirationInSec = Number(process.env.TOKEN_EXPIRATION_IN_SEC || '86400')
     await redis.client.setex(email, expirationInSec, token)
+    return token
 }
 
 const removeToken = (email) => {
