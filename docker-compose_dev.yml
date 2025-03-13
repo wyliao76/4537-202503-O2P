@@ -7,16 +7,14 @@ networks:
         - subnet: 192.168.90.0/24
 
 services:
-  mongo-express:
-    image: mongo-express
-    container_name: mongo_express
+  redis:
+    image: redis:7.4.2-alpine
+    container_name: redis
     restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
     networks:
       - proxy
+    ports:
+      - 6379:6379
 
   fursona:
     build:
@@ -34,3 +32,7 @@ services:
       PORT: ${PORT}
       OPENAI: ${OPENAI}
       AUTO_INDEX: ${AUTO_INDEX}
+      REDIS_HOST: ${REDIS_HOST}
+      SECRET: ${SECRET}
+      TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}

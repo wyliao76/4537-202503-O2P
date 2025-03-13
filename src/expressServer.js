@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }))
 const whitelist = [process.env.FRONTEND_ORIGIN, 'null']
 app.use(cors({
     origin: (origin, callback) => {
-        if (whitelist.indexOf(origin) !== -1) {
+        if (!origin || whitelist.indexOf(origin) !== -1) {
             callback(null, true)
         } else {
             callback(new CustomError('400', 'Not allowed by CORS'))
