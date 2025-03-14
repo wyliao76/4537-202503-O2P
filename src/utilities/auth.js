@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const { CustomError } = require('./customError')
 const redis = require('./redis')
+const usersModel = require('../models/users')
 
 const addToken = async (email) => {
     const token = await jwt.sign({ email: email }, process.env.SECRET, { expiresIn: Number(process.env.TOKEN_EXPIRATION_IN_SEC) })
@@ -42,9 +43,25 @@ const isLogin = async (req, _, next) => {
     }
 }
 
+const isAdmin = async (req, _, next) => {
+    try {
+        const { token } = req.cookies || {}
+        const { email } = await jwt.decode(token) || {}
+        const user = await usersModel.findOne({ email: email }, { email: 1, role: 1 }).lean()
+
+        if (!user || user.role !== 'admin') {
+            throw new CustomError('403', 'not admin')
+        }
+        next()
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     addToken,
     revokeToken,
     verify,
     isLogin,
+    isAdmin,
 }
