@@ -1,15 +1,30 @@
+networks:
+  proxy:
+    name: fursona
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.90.0/24
+
+volumes:
+  mongodb_data:
+
 services:
   mongodb:
-    image: mongo:latest
-    container_name: mongodb_container
+    build:
+      context: .
+      dockerfile: Dockerfile_mongodb
+    container_name: mongodb
+    hostname: mongodb
     restart: always
+    networks:
+      - proxy
     ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
+      - 27017:27017
+    expose:
+      - 27017
     volumes:
-      - mongo-data:/data/db
+      - mongodb_data:/data/db
 
   mongo-express:
     image: mongo-express
@@ -18,11 +33,40 @@ services:
     ports:
       - "8081:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: password
-      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
     depends_on:
       - mongodb
+    networks:
+      - proxy
 
-volumes:
-  mongo-data:
+  redis:
+    image: redis:7.4.2-alpine
+    container_name: redis
+    restart: always
+    networks:
+      - proxy
+    ports:
+      - 6379:6379
+
+  # fursona:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: fursona
+  #   restart: always
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - proxy
+  #   ports:
+  #     - "${PORT}:${PORT}"
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV}
+  #     MONGODB_URL: ${MONGODB_URL}
+  #     PORT: ${PORT}
+  #     OPENAI: ${OPENAI}
+  #     AUTO_INDEX: ${AUTO_INDEX}
+  #     REDIS_HOST: ${REDIS_HOST}
+  #     SECRET: ${SECRET}
+  #     TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
+  #     FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
