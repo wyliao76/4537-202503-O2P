@@ -45,15 +45,32 @@ class AIManager {
                 { role: 'system', content: 'You are a helpful assistant.' },
                 {
                     role: 'user',
-                    content: `Based on the following answers to personality questions,
-                    generate a short persona on a superhero: ${userAnswers}`,
+                    content: `Based on the following answers to personality questions, generate a short persona on a superhero in JSON format with the following fields: 
+                    Name, Powers, Backstory, ArchNemesis. Here are the answers: ${userAnswers}
+                    
+                    Please structure the response as follows:
+                    {
+                      "Name": "Superhero Name",
+                      "Powers": "List of superhero powers",
+                      "Backstory": "Short backstory of the superhero",
+                      "ArchNemesis": "Name of the superhero's arch nemesis"
+                    }`,
                 },
             ],
+            response_format: { type: 'json_object' },
         })
 
-        console.log('In persona func: ' + completion.choices[0].message.content)
 
-        return completion.choices[0].message.content
+        const persona = completion.choices[0].message.content
+        const personaObject = JSON.parse(persona)
+
+        const imageUrl = await this.generateImage(userAnswers)
+        console.log('Generated Image URL:', imageUrl)
+
+        return {
+            persona: personaObject,
+            imageUrl: imageUrl,
+        }
     }
 
     async generateQuestionBatch() {
@@ -63,34 +80,24 @@ class AIManager {
                 { role: 'system', content: 'You are a helpful assistant.' },
                 {
                     role: 'user',
-                    content: `Generate 3 personality questions with 4 multiple-choice answers each.
+                    content: `Generate 3 personality questions with 4 multiple-choice answers each. Respond in strict JSON format as follows:
+                    [
+                        {
+                            "question": "What is your preferred way to relax?",
+                            "options": {
+                                "a": "Reading a book",
+                                "b": "Listening to music",
+                                "c": "Going for a walk",
+                                "d": "Watching a movie"
+                            }
+                        }
+                    ]
                     
-    Format **strictly** like this:
-    
-    1: <your question>
-    A) <answer>
-    B) <answer>
-    C) <answer>
-    D) <answer>
-    
-    2: <your question>
-    A) <answer>
-    B) <answer>
-    C) <answer>
-    D) <answer>
-    
-    3: <your question>
-    A) <answer>
-    B) <answer>
-    C) <answer>
-    D) <answer>
-    
-    **Do NOT add extra text, explanations, or greetings.**`,
+                    Only return the JSON array with three unique questions, no additional text.`,
                 },
             ],
+            response_format: { type: 'json_object' },
         })
-
-        console.log('In func: ' + completion.choices[0].message.content)
 
         return completion.choices[0].message.content
     }
