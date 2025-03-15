@@ -1,9 +1,7 @@
 const express = require('express')
 const compression = require('compression')
 const cookieParser = require('cookie-parser')
-const { authRouter } = require('./routers')
-const usersModel = require('./models/users')
-const AIManager = require('./ai')
+const { authRouter, apiRouter } = require('./routers')
 const cors = require('cors')
 const { CustomError, auth } = require('./utilities')
 
@@ -28,9 +26,8 @@ app.use(cors({
     credentials: true,
 }))
 
-const aiManager = new AIManager()
-
 app.use('/', authRouter)
+app.use('/api', auth.isLogin, apiRouter)
 
 app.get('/isLogin', auth.isLogin, (_, res) => {
     return res.status(200).send('ok')
@@ -55,6 +52,10 @@ app.post('/api/persona', async (req, res) => {
     const response = await aiManager.generatePersona(JSON.stringify(answerObjs))
     res.json(response)
 })
+// app.get('/api/users', async (req, res) => {
+//     const users = await usersModel.find()
+//     res.json(users)
+// })
 
 app.get('*', (req, res) => {
     return res.status(404).json({ error: 'Page does not exist!' })

@@ -108,6 +108,4 @@ class AIManager {
     
 }
 
-module.exports = AIManager;
-
-
+module.exports = { AIManager }

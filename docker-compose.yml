@@ -48,25 +48,25 @@ services:
     ports:
       - 6379:6379
 
-  fursona:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: fursona
-    restart: always
-    depends_on:
-      - mongodb
-    networks:
-      - proxy
-    ports:
-      - "${PORT}:${PORT}"
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      MONGODB_URL: ${MONGODB_URL}
-      PORT: ${PORT}
-      OPENAI: ${OPENAI}
-      AUTO_INDEX: ${AUTO_INDEX}
-      REDIS_HOST: ${REDIS_HOST}
-      SECRET: ${SECRET}
-      TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+  # fursona:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: fursona
+  #   restart: always
+  #   depends_on:
+  #     - mongodb
+  #   networks:
+  #     - proxy
+  #   ports:
+  #     - "${PORT}:${PORT}"
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV}
+  #     MONGODB_URL: ${MONGODB_URL}
+  #     PORT: ${PORT}
+  #     OPENAI: ${OPENAI}
+  #     AUTO_INDEX: ${AUTO_INDEX}
+  #     REDIS_HOST: ${REDIS_HOST}
+  #     SECRET: ${SECRET}
+  #     TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
+  #     FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
