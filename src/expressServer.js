@@ -42,9 +42,9 @@ app.get('*', (req, res) => {
     return res.status(404).json({ error: 'Page does not exist!' })
 })
 
-app.use((err, req, res, next) => {
-    console.error(err)
-    return res.status(err.code || 500).json({ msg: err.msg })
+app.use((error, req, res, next) => {
+    // error.code ? console.error(error.message) : console.error(error)
+    return res.status(error.code || 500).json({ msg: error.message })
 })
 
 module.exports = { server, app }
