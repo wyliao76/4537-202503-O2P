@@ -56,13 +56,6 @@ app.post('/api/persona', async (req, res) => {
     res.json(response)
 })
 
-app.post('/api/image', async (req, res) => {
-    const answerObjs = req.body
-    const response = await aiManager.generateImage(JSON.stringify(answerObjs))
-    console.log('response being sent: ' + response)
-    res.json(response)
-})
-
 app.get('*', (req, res) => {
     return res.status(404).json({ error: 'Page does not exist!' })
 })
