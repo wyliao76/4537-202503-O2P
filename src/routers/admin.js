@@ -4,4 +4,10 @@ const adminController = require('../controllers/admin')
 
 router.get('/users', adminController.usersGET)
 
+router.post('/banUser', adminController.banUserPOST)
+
+router.post('/unBanUser', adminController.unBanUserPOST)
+
+router.post('/adjustToken', adminController.adjustTokenPOST)
+
 module.exports = router
