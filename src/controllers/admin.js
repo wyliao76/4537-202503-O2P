@@ -1,6 +1,10 @@
 const { adminService } = require('../services/index')
 const Joi = require('joi')
 
+const isAdminGET = async (req, res, next) => {
+    return res.status(200).json({ msg: 'ok' })
+}
+
 const usersGET = async (req, res, next) => {
     try {
         const result = await adminService.usersGET()
@@ -80,6 +84,7 @@ const adjustTokenPOST = async (req, res, next) => {
 }
 
 module.exports = {
+    isAdminGET,
     usersGET,
     banUserPOST,
     unBanUserPOST,

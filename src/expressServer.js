@@ -30,10 +30,6 @@ app.use('/', authRouter)
 app.use('/api', auth.isLogin, apiRouter)
 app.use('/admin', auth.isLogin, auth.isAdmin, adminRouter)
 
-app.get('/isLogin', auth.isLogin, (_, res) => {
-    return res.status(200).send('ok')
-})
-
 app.get('/health', (_, res) => {
     return res.status(200).send('ok')
 })
