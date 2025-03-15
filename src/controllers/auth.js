@@ -53,7 +53,7 @@ const loginPOST = async (req, res, next) => {
 
         const token = await authService.loginPOST(email.toLowerCase(), password)
 
-        res.cookie('token', token, { maxAge: 86400 * 1000, httpOnly: true })
+        res.cookie('token', token, { maxAge: 86400 * 1000, httpOnly: true, sameSite: 'None' })
 
         return res.status(200).json({ msg: token })
     } catch (error) {
