@@ -1,7 +1,6 @@
-const { auth, redis, CustomError } = require('../../src/utilities/index')
 const usersModel = require('../../src/models/users')
 const { adminController } = require('../../src/controllers')
-const { adminService, authService } = require('../../src/services')
+const { adminService } = require('../../src/services')
 const Joi = require('joi')
 
 const users = [
