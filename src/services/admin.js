@@ -22,13 +22,39 @@ const banUserPOST = async (email) => {
 
     return result
 }
-const adjustTokenPOST = (email) => {
-    return usersModel.find({}, { email: 1, role: 1, api_tokens: 1 }).lean()
+
+const unBanUserPOST = async (email) => {
+    const result = await usersModel.findOneAndUpdate(
+        { email: email },
+        { enable: true },
+        { new: true, projection: { email: 1, enable: 1 } },
+    )
+
+    if (!result || result.enable === false) {
+        throw new CustomError('500', 'Failed to enable user')
+    }
+
+    return result
+}
+
+const adjustTokenPOST = async (email, times) => {
+    const result = await usersModel.findOneAndUpdate(
+        { email: email },
+        { api_tokens: times },
+        { new: true, projection: { email: 1, api_tokens: 1 } },
+    )
+
+    if (!result || result.api_tokens !== times) {
+        throw new CustomError('500', 'Failed to adjust api tokens')
+    }
+
+    return result
 }
 
 
 module.exports = {
     usersGET,
     banUserPOST,
+    unBanUserPOST,
     adjustTokenPOST,
 }
