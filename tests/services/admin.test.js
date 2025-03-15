@@ -1,4 +1,4 @@
-const { auth, redis, CustomError } = require('../../src/utilities/index')
+const { redis, CustomError } = require('../../src/utilities/index')
 const usersModel = require('../../src/models/users')
 const { adminService, authService } = require('../../src/services')
 
@@ -6,10 +6,6 @@ const users = [
     { email: 'admin@gmail.com', password: 'admin', role: 'admin' },
     { email: 'test@gmail.com', password: '123', role: 'normal' },
 ]
-
-const adjustTokenPOST = (email) => {
-    return usersModel.find({}, { email: 1, role: 1, api_tokens: 1 }).lean()
-}
 
 describe('admin', () => {
     describe('usersGET', () => {
