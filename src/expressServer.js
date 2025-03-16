@@ -1,7 +1,7 @@
 const express = require('express')
 const compression = require('compression')
 const cookieParser = require('cookie-parser')
-const { authRouter, apiRouter, adminRouter } = require('./routers')
+const { authRouter, apiRouter, adminRouter, userRouter } = require('./routers')
 const cors = require('cors')
 const { CustomError, auth } = require('./utilities')
 
@@ -29,6 +29,7 @@ app.use(cors({
 app.use('/', authRouter)
 app.use('/api', auth.isLogin, apiRouter)
 app.use('/admin', auth.isLogin, auth.isAdmin, adminRouter)
+app.use('/user', auth.isLogin, userRouter)
 
 app.get('/health', (_, res) => {
     return res.status(200).send('ok')
