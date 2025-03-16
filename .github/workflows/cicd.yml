@@ -1,0 +1,42 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ $default-branch, dev ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    environment: test
+
+    env:
+      TOKEN_EXPIRATION_IN_SEC: ${{ vars.TOKEN_EXPIRATION_IN_SEC }}
+      OPENAI: ${{ secrets.OPENAI }}
+      SECRET: ${{ secrets.SECRET }}
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run Linter / Formatter
+      run: npm run lint
+
+    - name: Run unit tests
+      run: npm run test
+
+    - name: Run coverage
+      run: npm run coverage
