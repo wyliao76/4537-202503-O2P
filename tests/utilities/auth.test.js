@@ -1,8 +1,10 @@
 const { auth, redis, CustomError } = require('../../src/utilities/index')
 const jwt = require('jsonwebtoken')
+const usersModel = require('../../src/models/users')
 
 const users = [
-    { email: 'admin@gmail.com', password: 'admin' },
+    { email: 'admin@gmail.com', password: 'admin', role: 'admin' },
+    { email: 'test@gmail.com', password: '123', role: 'normal' },
 ]
 
 describe('auth', () => {
@@ -93,6 +95,39 @@ describe('auth', () => {
             expect(next).toHaveBeenCalledWith(new CustomError('401', 'jwt expired'))
 
             process.env.TOKEN_EXPIRATION_IN_SEC = TOKEN_EXPIRATION_IN_SEC
+        })
+    })
+
+    describe('isAdmin', () => {
+        let next
+
+        beforeEach(async () => {
+            next = jest.fn()
+            await usersModel.insertMany(users)
+        })
+
+        it('pass', async () => {
+            const token = await auth.addToken(users[0].email)
+            const req = { cookies: { token: token } }
+            await auth.isAdmin(req, {}, next)
+
+            expect(next).toHaveBeenCalledWith()
+        })
+
+        it('fail (not admin)', async () => {
+            const token = await auth.addToken(users[1].email)
+            const req = { cookies: { token: token } }
+            await auth.isAdmin(req, {}, next)
+
+            expect(next).toHaveBeenCalledWith(new CustomError('403', 'not admin'))
+        })
+
+        it('fail (no user)', async () => {
+            const token = await auth.addToken('nouser@gmail.com')
+            const req = { cookies: { token: token } }
+            await auth.isAdmin(req, {}, next)
+
+            expect(next).toHaveBeenCalledWith(new CustomError('403', 'not admin'))
         })
     })
 })

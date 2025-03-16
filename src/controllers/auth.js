@@ -1,6 +1,10 @@
 const { authService } = require('../services/index')
 const Joi = require('joi')
 
+const isLoginGET = (req, res, next) => {
+    return res.status(200).json({ msg: 'ok' })
+}
+
 const registerPOST = async (req, res, next) => {
     try {
         const { email, password } = req.body
@@ -77,6 +81,7 @@ const resetPasswordPOST = async (req, res, next) => {
 
 
 module.exports = {
+    isLoginGET,
     registerPOST,
     loginPOST,
     logoutGET,

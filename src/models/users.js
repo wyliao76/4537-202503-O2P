@@ -22,7 +22,7 @@ const UsersSchema = new Schema({
     },
     enable: {
         type: Boolean,
-        default: false,
+        default: true,
     },
     api_tokens: {
         type: Number, default: 20,
