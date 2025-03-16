@@ -3,7 +3,13 @@ const usersModel = require('../models/users')
 
 
 const usersGET = () => {
-    return usersModel.find({}, { email: 1, role: 1, api_tokens: 1 }).lean()
+    return usersModel.find({}, {
+        email: 1,
+        role: 1,
+        api_tokens: 1,
+        lastLogin: 1,
+        enable: 1,
+    }).lean()
 }
 
 const banUserPOST = async (email) => {

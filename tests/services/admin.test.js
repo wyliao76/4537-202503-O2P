@@ -20,6 +20,8 @@ describe('admin', () => {
             results.forEach((result, index) => {
                 expect(result.email).toBe(users[index].email)
                 expect(result.role).toBe(users[index].role)
+                expect(result.lastLogin).toBeNull()
+                expect(result.enable).toBe(true)
                 expect(result.api_tokens).toBe(20)
             })
         })
