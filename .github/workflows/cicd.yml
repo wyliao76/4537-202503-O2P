@@ -44,17 +44,6 @@ jobs:
   deploy-dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
-    environment: dev
-
-    env:
-      MONGODB_URL: ${{ secrets.MONGODB_URL }}
-      OPENAI: ${{ secrets.OPENAI }}
-      SECRET: ${{ secrets.SECRET }}
-      AUTO_INDEX: ${{ vars.AUTO_INDEX }}
-      FRONTEND_ORIGIN: ${{ vars.FRONTEND_ORIGIN }}
-      PORT: ${{ vars.PORT }}
-      REDIS_HOST: ${{ vars.REDIS_HOST }}
-      TOKEN_EXPIRATION_IN_SEC: ${{ vars.TOKEN_EXPIRATION_IN_SEC }}
 
     needs: ci
     if: github.ref == 'refs/heads/dev'
@@ -68,13 +57,28 @@ jobs:
         with: 
           ssh-private-key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
 
-      - name: Copy necessary files to the VM
-        run: scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
+      - name: Remove folder and Copy necessary files to the VM
+        run: |
+            ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
+              rm -rf ~/fursona
+              mkdir -p ~/fursona
+            EOF
+            scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
 
       - name: Deploy to Dev Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
             cd fursona
-            docker compose down
-            docker compose up -f docker-compose_dev.yml -d --build
+            echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
+            echo "OPENAI=${{ secrets.OPENAI }}" >> .env
+            echo "SECRET=${{ secrets.SECRET }}" >> .env
+            echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
+            echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
+            echo "PORT=${{ vars.PORT }}" >> .env
+            echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
+            echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
+            
+            docker compose --env-file .env -f docker-compose_dev.yml down
+            docker compose --env-file .env -f docker-compose_dev.yml up -d --build
+            rm .env
           EOF
