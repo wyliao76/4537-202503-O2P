@@ -1,8 +1,8 @@
 const { apiService } = require('../services/index')
 
-const questionsPOST = async (req, res, next) => {
+const questionsGET = async (req, res, next) => {
     try {
-        const result = await apiService.questionsPOST()
+        const result = await apiService.questionsGET()
 
         return res.status(200).json({ msg: result })
     } catch (error) {
@@ -12,21 +12,7 @@ const questionsPOST = async (req, res, next) => {
 
 const personaPOST = async (req, res, next) => {
     try {
-        const { answerObjs } = req.body
-
-        const result = await apiService.personaPOST(answerObjs)
-
-        return res.status(200).json({ msg: result })
-    } catch (error) {
-        next(error)
-    }
-}
-
-const imagePOST = async (req, res, next) => {
-    try {
-        const { answerObjs } = req.body
-
-        const result = await apiService.imagePOST(answerObjs)
+        const result = await apiService.personaPOST(req.body)
 
         return res.status(200).json({ msg: result })
     } catch (error) {
@@ -35,7 +21,6 @@ const imagePOST = async (req, res, next) => {
 }
 
 module.exports = {
-    questionsPOST,
+    questionsGET,
     personaPOST,
-    imagePOST,
 }
