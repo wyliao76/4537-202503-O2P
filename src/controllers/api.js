@@ -12,8 +12,6 @@ const questionsPOST = async (req, res, next) => {
 
 const personaPOST = async (req, res, next) => {
     try {
-        const { answerObjs } = req.body
-
         const result = await apiService.personaPOST(answerObjs)
 
         return res.status(200).json({ msg: result })
