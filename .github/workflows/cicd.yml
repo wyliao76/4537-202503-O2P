@@ -44,6 +44,7 @@ jobs:
   deploy-dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
+    environment: dev
 
     needs: ci
     if: github.ref == 'refs/heads/dev'
@@ -77,8 +78,7 @@ jobs:
             echo "PORT=${{ vars.PORT }}" >> .env
             echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
+            echo "NODE_ENV=dev" >> .env
             
-            docker compose --env-file .env -f docker-compose_dev.yml down
             docker compose --env-file .env -f docker-compose_dev.yml up -d --build
-            rm .env
           EOF
