@@ -2,10 +2,8 @@ const express = require('express')
 const router = new express.Router()
 const apiController = require('../controllers/api')
 
-router.post('/questions', apiController.questionsPOST)
+router.get('/questions', apiController.questionsGET)
 
 router.post('/persona', apiController.personaPOST)
-
-router.post('/image', apiController.imagePOST)
 
 module.exports = router
