@@ -77,7 +77,7 @@ jobs:
               rm -rf ~/fursona
               mkdir -p ~/fursona
             EOF
-            scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml package.json package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
+            scp -o StrictHostKeyChecking=no -r src docker-compose.yml package.json package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
 
       - name: Deploy to Dev Server
         run: |
@@ -86,6 +86,7 @@ jobs:
             echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
             echo "OPENAI=${{ secrets.OPENAI }}" >> .env
             echo "SECRET=${{ secrets.SECRET }}" >> .env
+            echo "REDIS_PWD=${{ secrets.REDIS_PWD }}" >> .env
             echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
             echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
             echo "PORT=${{ vars.PORT }}" >> .env
@@ -93,6 +94,6 @@ jobs:
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
             echo "NODE_ENV=dev" >> .env
             
-            docker compose --env-file .env -f docker-compose_dev.yml up -d --build
+            docker compose up --build -d
             rm .env
           EOF

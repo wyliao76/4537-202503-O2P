@@ -6,67 +6,34 @@ networks:
       config:
         - subnet: 192.168.90.0/24
 
-volumes:
-  mongodb_data:
-
 services:
-  mongodb:
-    build:
-      context: .
-      dockerfile: Dockerfile_mongodb
-    container_name: mongodb
-    hostname: mongodb
-    restart: always
-    networks:
-      - proxy
-    ports:
-      - 27017:27017
-    expose:
-      - 27017
-    volumes:
-      - mongodb_data:/data/db
-
-  mongo-express:
-    image: mongo-express
-    container_name: mongo_express
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_URL: ${ME_CONFIG_MONGODB_URL}
-    depends_on:
-      - mongodb
-    networks:
-      - proxy
-
   redis:
     image: redis:7.4.2-alpine
     container_name: redis
     restart: always
     networks:
       - proxy
+    command: redis-server --bind 0.0.0.0 --requirepass ${REDIS_PWD}
     ports:
-      - 6379:6379
+      - "127.0.0.1:6379:6379"
 
-  # fursona:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: fursona
-  #   restart: always
-  #   depends_on:
-  #     - mongodb
-  #   networks:
-  #     - proxy
-  #   ports:
-  #     - "${PORT}:${PORT}"
-  #   environment:
-  #     NODE_ENV: ${NODE_ENV}
-  #     MONGODB_URL: ${MONGODB_URL}
-  #     PORT: ${PORT}
-  #     OPENAI: ${OPENAI}
-  #     AUTO_INDEX: ${AUTO_INDEX}
-  #     REDIS_HOST: ${REDIS_HOST}
-  #     SECRET: ${SECRET}
-  #     TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
-  #     FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+  fursona:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fursona
+    restart: always
+    networks:
+      - proxy
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      MONGODB_URL: ${MONGODB_URL}
+      PORT: ${PORT}
+      OPENAI: ${OPENAI}
+      AUTO_INDEX: ${AUTO_INDEX}
+      REDIS_HOST: ${REDIS_HOST}
+      SECRET: ${SECRET}
+      TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
