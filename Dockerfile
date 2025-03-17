@@ -2,7 +2,7 @@
 FROM node:22-alpine
 
 # Copy package.json and package-lock.json to the working directory
-COPY package-lock.json ./
+COPY package-lock.json package.json ./
 
 # Install dependencies
 RUN npm ci

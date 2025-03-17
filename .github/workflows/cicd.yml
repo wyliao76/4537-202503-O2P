@@ -64,7 +64,7 @@ jobs:
               rm -rf ~/fursona
               mkdir -p ~/fursona
             EOF
-            scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
+            scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml package.json package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
 
       - name: Deploy to Dev Server
         run: |
