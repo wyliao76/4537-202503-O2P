@@ -85,8 +85,9 @@ jobs:
             cd fursona
             echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
             echo "OPENAI=${{ secrets.OPENAI }}" >> .env
-            echo "SECRET=${{ secrets.SECRET }}" >> .env
             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+            echo "REDIS_PWD=${{ secrets.REDIS_PWD }}" >> .env
+            echo "SECRET=${{ secrets.SECRET }}" >> .env
             echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
             echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
             echo "PORT=${{ vars.PORT }}" >> .env
