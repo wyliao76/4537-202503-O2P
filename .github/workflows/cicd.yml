@@ -86,11 +86,10 @@ jobs:
             echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
             echo "OPENAI=${{ secrets.OPENAI }}" >> .env
             echo "SECRET=${{ secrets.SECRET }}" >> .env
-            echo "REDIS_PWD=${{ secrets.REDIS_PWD }}" >> .env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
             echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
             echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
             echo "PORT=${{ vars.PORT }}" >> .env
-            echo "REDIS_HOST=${{ vars.REDIS_HOST }}" >> .env
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
             echo "NODE_ENV=dev" >> .env
             
