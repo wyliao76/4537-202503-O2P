@@ -81,4 +81,5 @@ jobs:
             echo "NODE_ENV=dev" >> .env
             
             docker compose --env-file .env -f docker-compose_dev.yml up -d --build
+            rm .env
           EOF
