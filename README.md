@@ -158,6 +158,6 @@ setup mongodb
 
 fill in /src/.env.local
 
-npm i
+npm ci
 
 npm run local
