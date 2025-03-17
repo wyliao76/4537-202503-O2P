@@ -1,13 +1,27 @@
 const { OpenAI } = require('openai')
 const axios = require('axios')
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI,
-})
-
 class AIManager {
+    constructor() {
+        this.openai = new OpenAI({
+            apiKey: process.env.OPENAI,
+        })
+    }
+
+    async generate(userAnswers) {
+        const [personaObject, imageUrl] = await Promise.all([
+            this.generatePersona(userAnswers),
+            this.generateImage(userAnswers),
+        ])
+
+        return {
+            persona: personaObject,
+            imageUrl: imageUrl,
+        }
+    }
+
     async generateImage(userAnswers) {
-        const completion1 = await openai.chat.completions.create({
+        const completion1 = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
@@ -39,7 +53,7 @@ class AIManager {
     }
 
     async generatePersona(userAnswers) {
-        const completion = await openai.chat.completions.create({
+        const completion = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
@@ -60,21 +74,14 @@ class AIManager {
             response_format: { type: 'json_object' },
         })
 
-
         const persona = completion.choices[0].message.content
         const personaObject = JSON.parse(persona)
 
-        const imageUrl = await this.generateImage(userAnswers)
-        console.log('Generated Image URL:', imageUrl)
-
-        return {
-            persona: personaObject,
-            imageUrl: imageUrl,
-        }
+        return personaObject
     }
 
     async generateQuestionBatch() {
-        const completion = await openai.chat.completions.create({
+        const completion = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },

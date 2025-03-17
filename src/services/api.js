@@ -3,23 +3,16 @@ const { AIManager } = require('../utilities')
 
 const aiManager = new AIManager()
 
-const questionsPOST = () => {
+const questionsGET = () => {
     return aiManager.generateQuestionBatch()
 }
 
-const personaPOST = async (answerObjs) => {
-    const response = await aiManager.generatePersona(JSON.stringify(answerObjs))
-    return response
-}
-
-const imagePOST = async (answerObjs) => {
-    const response = await aiManager.generateImage(JSON.stringify(answerObjs))
-    console.log('response being sent: ' + response)
+const personaPOST = async (body) => {
+    const response = await aiManager.generate(JSON.stringify(body))
     return response
 }
 
 module.exports = {
-    questionsPOST,
+    questionsGET,
     personaPOST,
-    imagePOST,
 }
