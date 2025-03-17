@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    # branches: [ $default-branch, dev ]
+    branches: [ $default-branch, dev ]
   pull_request:
     branches: [ $default-branch ]
 
@@ -47,7 +47,7 @@ jobs:
     environment: dev
 
     env:
-      MONGODB_URL: ${{ MONGODB_URL }}
+      MONGODB_URL: ${{ secrets.MONGODB_URL }}
       OPENAI: ${{ secrets.OPENAI }}
       SECRET: ${{ secrets.SECRET }}
       AUTO_INDEX: ${{ vars.AUTO_INDEX }}
