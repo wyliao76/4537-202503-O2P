@@ -69,12 +69,12 @@ jobs:
           ssh-private-key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
 
       - name: Copy necessary files to the VM
-        run: scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml root@${{ secrets.DO_HOST }}:~/fursona
+        run: scp -o StrictHostKeyChecking=no -r src docker-compose_dev.yml package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
 
       - name: Deploy to Dev Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
-            cd /fursona
+            cd fursona
             docker compose down
             docker compose up -f docker-compose_dev.yml -d --build
           EOF
