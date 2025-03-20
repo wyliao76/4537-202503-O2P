@@ -21,6 +21,7 @@ const registerPOST = async (email, password) => {
 }
 
 const loginPOST = async (email, password) => {
+    // toFix deal with banned user
     const user = await usersModel.findOne({ email: email }, { email: 1, password: 1 }).lean()
     if (!user) {
         throw new CustomError('404', 'User not found')
