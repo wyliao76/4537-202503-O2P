@@ -1,4 +1,5 @@
 const usersModel = require('../models/users')
+const tokensModel = require('../models/tokens')
 const bcrypt = require('bcrypt')
 const SALT_ROUNDS = 10
 const { auth, CustomError, redis } = require('../utilities')
@@ -18,6 +19,16 @@ const registerPOST = async (email, password) => {
     }
 
     await usersModel.create(user)
+}
+
+const addToTokensTable = async (email) => {
+
+    const api_tokens = {
+        email: email,
+        tokens: 20
+    }
+
+    await tokensModel.create(api_tokens);
 }
 
 const loginPOST = async (email, password) => {
@@ -50,4 +61,5 @@ module.exports = {
     loginPOST,
     logoutGET,
     resetPasswordPOST,
+    addToTokensTable
 }
