@@ -24,9 +24,6 @@ const UsersSchema = new Schema({
         type: Boolean,
         default: true,
     },
-    api_tokens: {
-        type: Number, default: 20,
-    },
 }, {
     timestamps: true,
 })
