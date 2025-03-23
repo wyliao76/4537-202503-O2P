@@ -58,10 +58,26 @@ const isAdmin = async (req, _, next) => {
     }
 }
 
+const isEnable = async(req, _, next) => {
+    try {
+        const { token } = req.cookies || {}
+        const { email } = await jwt.decode(token) || {}
+        const user = await usersModel.findOne({ email: email }, { email: 1, enable: 1 }).lean() // lean() converts result to a js object
+
+        if (!user || user.enable !== true) {
+            throw new CustomError('403', 'not enabled')
+        }
+        next()
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     addToken,
     revokeToken,
     verify,
     isLogin,
     isAdmin,
+    isEnable,
 }
