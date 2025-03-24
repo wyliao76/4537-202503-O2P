@@ -23,8 +23,6 @@ const registerPOST = async (req, res, next) => {
 
         await authService.registerPOST(email.toLowerCase(), password)
 
-        await authService.addToTokensTable(email.toLowerCase())
-
         return res.status(200).json({ msg: 'ok' })
     } catch (err) {
         console.log(err)

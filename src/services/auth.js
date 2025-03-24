@@ -2,6 +2,7 @@ const usersModel = require('../models/users')
 const tokensModel = require('../models/tokens')
 const bcrypt = require('bcrypt')
 const SALT_ROUNDS = 10
+const mongoose = require('mongoose')
 const { auth, CustomError, redis } = require('../utilities')
 
 const registerPOST = async (email, password) => {
@@ -18,17 +19,21 @@ const registerPOST = async (email, password) => {
         password: hashedPass,
     }
 
-    await usersModel.create(user)
-}
+    const session = await mongoose.startSession()
+    session.startTransaction()
 
-const addToTokensTable = async (email) => {
+    try {
+        await Promise.all([
+            usersModel.create(user),
+            tokensModel.create({ email: email }),
+        ])
 
-    const api_tokens = {
-        email: email,
-        tokens: 20
+        await session.commitTransaction()
+    } catch (error) {
+        await session.abortTransaction()
+    } finally {
+        session.endSession()
     }
-
-    await tokensModel.create(api_tokens);
 }
 
 const loginPOST = async (email, password) => {
@@ -61,5 +66,4 @@ module.exports = {
     loginPOST,
     logoutGET,
     resetPasswordPOST,
-    addToTokensTable
 }

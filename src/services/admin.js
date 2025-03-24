@@ -1,5 +1,6 @@
 const { redis, CustomError } = require('../utilities')
 const usersModel = require('../models/users')
+const tokenModel = require('../models/tokens')
 
 
 const usersGET = () => {
@@ -44,13 +45,13 @@ const unBanUserPOST = async (email) => {
 }
 
 const adjustTokenPOST = async (email, times) => {
-    const result = await usersModel.findOneAndUpdate(
+    const result = await tokenModel.findOneAndUpdate(
         { email: email },
-        { api_tokens: times },
-        { new: true, projection: { email: 1, api_tokens: 1 } },
+        { tokens: times },
+        { new: true, projection: { email: 1, tokens: 1 } },
     )
 
-    if (!result || result.api_tokens !== times) {
+    if (!result || result.tokens !== times) {
         throw new CustomError('500', 'Failed to adjust api tokens')
     }
 
