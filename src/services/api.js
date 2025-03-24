@@ -1,6 +1,6 @@
 
 const { AIManager } = require('../utilities')
-const quizModel = require('../models/quizes')
+const quizModel = require('../models/quizzes')
 const tokensModel = require('../models/tokens')
 const { CustomError } = require('../utilities')
 
