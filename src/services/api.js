@@ -1,69 +1,51 @@
 
 const { AIManager } = require('../utilities')
 const quizModel = require('../models/quizes')
-const usersModel = require('../models/users')
 const tokensModel = require('../models/tokens')
+const { CustomError } = require('../utilities')
 
 const aiManager = new AIManager()
 
 const quizzesGET = async () => {
-    try {
-        const quizzes = await quizModel.find({});
-        if(!quizzes) {
-            console.log("No quizzes");
-        }
-        
-        return quizzes;
-    } catch(error) {
-        console.log("Error getting quizzes:", error)
+    const quizzes = await quizModel.find({}).lean()
+    if (!quizzes) {
+        throw new CustomError('404', 'No quizzes')
     }
+
+    return quizzes
 }
 
 const tokensGET = async (email) => {
-    try {
-        const user = await tokensModel.findOne({ email: email });
-        if (!user) {
-            console.log(`User not found: ${email}`);
-            return;
-        }
-
-        console.log(`user tokens: ${email}, ${user.tokens}`)
-
-        return user.tokens;
-
-    } catch (error) {
-        console.error("Error getting token count:", error);
+    const user = await tokensModel.findOne({ email: email }).lean()
+    if (!user) {
+        throw new CustomError('404', 'User not found')
     }
+
+    return user.tokens
 }
 
 const decrementApiTokens = async (email) => {
-
-    try {
-        const user = await tokensModel.findOne({ email: email });
-        if (!user) {
-            console.log(`User not found: ${email}`);
-            return;
-        }
-
-        if(user.tokens > 0) {
-            const res = await tokensModel.updateOne({ email: email }, { $inc: { tokens: -1 } });
-            console.log(`updated tokens of: ${email}`);
-        }
-
-    } catch (error) {
-        console.error("Error decrementing API tokens:", error);
+    const user = await tokensModel.findOne({ email: email }).lean()
+    if (!user) {
+        throw new CustomError('404', 'User not found')
     }
-} 
+
+    if (user.tokens > 0) {
+        await tokensModel.updateOne({ email: email }, { $inc: { tokens: -1 } })
+    }
+}
 
 const questionsGET = () => {
     return aiManager.generateQuestionBatch()
 }
 
 const personaPOST = async (body) => {
-    const quizType = body.quizType;
-    const answers = JSON.stringify(body.answers);
+    const quizType = body.quizType
+    const answers = JSON.stringify(body.answers)
 
-    const response = await aiManager.generate(quizType, answers);
+    const response = await aiManager.generate(quizType, answers)
+
+    console.log(response)
 
     return response
 }
@@ -73,5 +55,5 @@ module.exports = {
     personaPOST,
     quizzesGET,
     decrementApiTokens,
-    tokensGET
+    tokensGET,
 }

@@ -8,10 +8,10 @@ class AIManager {
         })
     }
 
-    async generate(quizType ,userAnswers) {
+    async generate(quizType, userAnswers) {
         const [personaObject, imageUrl] = await Promise.all([
-            this.generatePersona(quizType ,userAnswers),
-            this.generateImage(quizType ,userAnswers),
+            this.generatePersona(quizType, userAnswers),
+            this.generateImage(quizType, userAnswers),
         ])
 
         return {
@@ -20,7 +20,7 @@ class AIManager {
         }
     }
 
-    async generateImage(quizType ,userAnswers) {
+    async generateImage(quizType, userAnswers) {
         const completion1 = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
@@ -52,7 +52,7 @@ class AIManager {
         return imageUrl
     }
 
-    async generatePersona(quizType ,userAnswers) {
+    async generatePersona(quizType, userAnswers) {
         const completion = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
