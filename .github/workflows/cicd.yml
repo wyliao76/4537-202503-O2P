@@ -1,84 +1,116 @@
 name: CI/CD
-
-on:
+'on':
   push:
-    branches: [ main, dev ]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: [ main ]
-
+    branches:
+      - main
 jobs:
   lint_format:
     name: Lint/Format
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22.x
-        cache: npm
-
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run Linter / Formatter
-      run: npm run lint
-
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run Linter / Formatter
+        run: npm run lint
   unit_test:
     name: UnitTest
     runs-on: ubuntu-latest
     environment: test
-
     env:
-      TOKEN_EXPIRATION_IN_SEC: ${{ vars.TOKEN_EXPIRATION_IN_SEC }}
-      OPENAI: ${{ secrets.OPENAI }}
-      SECRET: ${{ secrets.SECRET }}
-
+      TOKEN_EXPIRATION_IN_SEC: '${{ vars.TOKEN_EXPIRATION_IN_SEC }}'
+      OPENAI: '${{ secrets.OPENAI }}'
+      SECRET: '${{ secrets.SECRET }}'
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 22.x
-        cache: npm
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Run unit tests
-      run: npm run test
-
-    - name: Run coverage
-      run: npm run coverage
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+      - name: Run coverage
+        run: npm run coverage
 
   deploy-dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
     environment: dev
-
-    needs: [lint_format, unit_test]
+    needs:
+      - lint_format
+      - unit_test
     if: github.ref == 'refs/heads/dev'
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.9.0
-        with: 
-          ssh-private-key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
-
+        with:
+          ssh-private-key: '${{ secrets.DO_SSH_PRIVATE_KEY }}'
       - name: Remove folder and Copy necessary files to the VM
-        run: |
-            ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
-              rm -rf ~/fursona
-              mkdir -p ~/fursona
-            EOF
-            scp -o StrictHostKeyChecking=no -r src docker-compose.yml package.json package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
+        run: >
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
+            rm -rf ~/fursona
+            mkdir -p ~/fursona
+          EOF
 
+          scp -o StrictHostKeyChecking=no -r src docker-compose.yml package.json
+          package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
+      - name: Deploy to Dev Server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
+            cd fursona
+            echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
+            echo "OPENAI=${{ secrets.OPENAI }}" >> .env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+            echo "REDIS_PWD=${{ secrets.REDIS_PWD }}" >> .env
+            echo "SECRET=${{ secrets.SECRET }}" >> .env
+            echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
+            echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
+            echo "PORT=${{ vars.PORT }}" >> .env
+            echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
+            echo "NODE_ENV=dev" >> .env
+            
+            docker compose up --build -d
+            rm .env
+          EOF
+
+  deploy-prod:
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+    environment: prod
+    needs:
+      - lint_format
+      - unit_test
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: '${{ secrets.DO_SSH_PRIVATE_KEY }}'
+      - name: Remove folder and Copy necessary files to the VM
+        run: >
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
+            rm -rf ~/fursona
+            mkdir -p ~/fursona
+          EOF
+
+          scp -o StrictHostKeyChecking=no -r src docker-compose.yml package.json
+          package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
       - name: Deploy to Dev Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
