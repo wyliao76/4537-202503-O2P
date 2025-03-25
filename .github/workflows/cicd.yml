@@ -126,6 +126,6 @@ jobs:
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
             echo "NODE_ENV=dev" >> .env
             
-            docker compose up --build -d
+            docker compose -f docker-compose_prod.yml up --build -d
             rm .env
           EOF
