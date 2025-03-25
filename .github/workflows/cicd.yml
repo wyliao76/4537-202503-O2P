@@ -105,16 +105,16 @@ jobs:
       - name: Remove folder and Copy necessary files to the VM
         run: >
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
-            rm -rf ~/fursona
-            mkdir -p ~/fursona
+            rm -rf ~/fursona_prod
+            mkdir -p ~/fursona_prod
           EOF
 
           scp -o StrictHostKeyChecking=no -r src docker-compose_prod.yml package.json
-          package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
+          package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona_prod
       - name: Deploy to Prod Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
-            cd fursona
+            cd fursona_prod
             echo "MONGODB_URL=${{ secrets.MONGODB_URL }}" > .env
             echo "OPENAI=${{ secrets.OPENAI }}" >> .env
             echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env

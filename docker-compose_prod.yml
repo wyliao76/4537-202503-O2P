@@ -21,7 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: fursona
+    container_name: fursona-prod
     restart: always
     networks:
       - proxy
