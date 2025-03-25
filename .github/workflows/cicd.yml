@@ -88,7 +88,7 @@ jobs:
           EOF
 
   deploy-prod:
-    name: Deploy to Dev
+    name: Deploy to Prod
     runs-on: ubuntu-latest
     environment: prod
     needs:
@@ -109,9 +109,9 @@ jobs:
             mkdir -p ~/fursona
           EOF
 
-          scp -o StrictHostKeyChecking=no -r src docker-compose.yml package.json
+          scp -o StrictHostKeyChecking=no -r src docker-compose_prod.yml package.json
           package-lock.json Dockerfile root@${{ secrets.DO_HOST }}:~/fursona
-      - name: Deploy to Dev Server
+      - name: Deploy to Prod Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
             cd fursona
@@ -124,7 +124,7 @@ jobs:
             echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
             echo "PORT=${{ vars.PORT }}" >> .env
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
-            echo "NODE_ENV=dev" >> .env
+            echo "NODE_ENV=prod" >> .env
             
             docker compose -f docker-compose_prod.yml up --build -d
             rm .env
