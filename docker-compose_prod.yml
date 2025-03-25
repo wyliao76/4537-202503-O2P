@@ -1,0 +1,39 @@
+networks:
+  proxy:
+    name: fursona
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.90.0/24
+
+services:
+  redis:
+    image: redis:7.4.2-alpine
+    container_name: redis-prod
+    restart: always
+    networks:
+      - proxy
+    command: redis-server --bind 0.0.0.0 --requirepass ${REDIS_PWD}
+    ports:
+      - "127.0.0.1:6380:6379"
+
+  fursona:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fursona-prod
+    restart: always
+    networks:
+      - proxy
+    ports:
+      - "${PORT}:${PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      MONGODB_URL: ${MONGODB_URL}
+      PORT: ${PORT}
+      OPENAI: ${OPENAI}
+      AUTO_INDEX: ${AUTO_INDEX}
+      REDIS_HOST: ${REDIS_HOST}
+      SECRET: ${SECRET}
+      TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
