@@ -1,4 +1,5 @@
 const usersModel = require('../../src/models/users')
+const tokensModel = require('../../src/models/tokens')
 const { adminController } = require('../../src/controllers')
 const { adminService } = require('../../src/services')
 const Joi = require('joi')
@@ -122,6 +123,7 @@ describe('admin', () => {
 
         beforeEach(async () => {
             await usersModel.insertMany(users)
+            await tokensModel.insertMany(users)
             result = await adminService.adjustTokenPOST(users[1].email, 100)
             res = {
                 status: jest.fn().mockReturnThis(200),

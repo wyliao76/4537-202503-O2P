@@ -1,4 +1,5 @@
 const { apiService } = require('../services/index')
+const jwt = require('jsonwebtoken')
 
 const questionsGET = async (req, res, next) => {
     try {
@@ -10,9 +11,38 @@ const questionsGET = async (req, res, next) => {
     }
 }
 
+const quizzesGET = async (req, res, next) => {
+    try {
+        const result = await apiService.quizzesGET()
+
+        return res.status(200).json({ msg: result })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const tokensGET = async (req, res, next) => {
+    try {
+        const { token } = req.cookies || {}
+        const { email } = await jwt.decode(token) || {}
+
+        const result = await apiService.tokensGET(email)
+        console.log(result)
+
+        return res.status(200).json({ msg: result })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const personaPOST = async (req, res, next) => {
     try {
         const result = await apiService.personaPOST(req.body)
+
+        const { token } = req.cookies || {}
+        const { email } = await jwt.decode(token) || {}
+
+        await apiService.decrementApiTokens(email)
 
         return res.status(200).json({ msg: result })
     } catch (error) {
@@ -23,4 +53,6 @@ const personaPOST = async (req, res, next) => {
 module.exports = {
     questionsGET,
     personaPOST,
+    quizzesGET,
+    tokensGET,
 }

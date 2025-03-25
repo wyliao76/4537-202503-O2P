@@ -6,7 +6,6 @@ const userGET = async (email) => {
     const user = await usersModel.findOne({ email: email }, {
         email: 1,
         role: 1,
-        api_tokens: 1,
         lastLogin: 1,
         enable: 1,
     }).lean()

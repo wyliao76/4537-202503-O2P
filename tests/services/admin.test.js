@@ -1,5 +1,6 @@
 const { redis, CustomError } = require('../../src/utilities/index')
 const usersModel = require('../../src/models/users')
+const tokensModel = require('../../src/models/tokens')
 const { adminService, authService } = require('../../src/services')
 
 const users = [
@@ -22,7 +23,6 @@ describe('admin', () => {
                 expect(result.role).toBe(users[index].role)
                 expect(result.lastLogin).toBeNull()
                 expect(result.enable).toBe(true)
-                expect(result.api_tokens).toBe(20)
             })
         })
     })
@@ -78,6 +78,7 @@ describe('admin', () => {
     describe('adjustTokenPOST', () => {
         beforeEach(async () => {
             await usersModel.insertMany(users)
+            await tokensModel.insertMany(users)
         })
 
         it('pass', async () => {
@@ -85,7 +86,7 @@ describe('admin', () => {
             const result = await adminService.adjustTokenPOST(users[1].email, times)
 
             expect(result.email).toBe(users[1].email)
-            expect(result.api_tokens).toBe(times)
+            expect(result.tokens).toBe(times)
         })
     })
 })
