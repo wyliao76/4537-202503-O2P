@@ -12,13 +12,14 @@ const apiLogger = async (req, _, next) => {
 
         const record = new Record({
             method: method,
-            path: path,
+            route: path,
             email: email,
         })
         await record.save()
 
         next()
     } catch (error) {
+        console.log(error)
         console.log('Error writing api call record')
         next()
     }
