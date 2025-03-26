@@ -16,6 +16,7 @@ const apiLogger = async (req, _, next) => {
             email: email,
         })
         await record.save()
+        console.log('API record logged')
 
         next()
     } catch (error) {
