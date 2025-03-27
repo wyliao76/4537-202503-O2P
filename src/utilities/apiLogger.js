@@ -6,7 +6,7 @@ const apiLogger = (req, res, next) => {
         if (![400, 401, 403, 404].includes(res.statusCode)) {
             try {
                 const { token } = req.cookies
-                console.log(req.originalUrl)
+                // console.log(req.originalUrl)
                 const result = await jwt.verify(token, process.env.SECRET)
                 const email = result.email
                 const method = req.method

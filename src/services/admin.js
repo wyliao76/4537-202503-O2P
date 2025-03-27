@@ -5,13 +5,32 @@ const recordsModel = require('../models/records')
 
 
 const usersGET = () => {
-    return usersModel.find({}, {
-        email: 1,
-        role: 1,
-        api_tokens: 1,
-        lastLogin: 1,
-        enable: 1,
-    }).lean()
+    const result = usersModel.aggregate([
+        {
+            $lookup: {
+                from: 'records',
+                localField: 'email',
+                foreignField: 'email',
+                as: 'userRecords',
+            },
+        },
+        {
+            $addFields: {
+                apiCallCount: { $size: '$userRecords' },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                email: 1,
+                role: 1,
+                enable: 1,
+                apiCallCount: 1,
+            },
+        },
+    ])
+
+    return result
 }
 
 const banUserPOST = async (email) => {
