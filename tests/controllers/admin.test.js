@@ -133,8 +133,8 @@ describe('admin', () => {
             await tokensModel.insertMany(users)
             result = await adminService.adjustTokenPOST(users[1].email, 100)
             res = {
-                status: jest.fn().mockReturnThis(200),
-                json: jest.fn().mockReturnThis({ msg: result }),
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
             }
             next = jest.fn()
         })
