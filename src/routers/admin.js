@@ -12,4 +12,6 @@ router.post('/unBanUser', adminController.unBanUserPOST)
 
 router.post('/adjustToken', adminController.adjustTokenPOST)
 
+router.get('/records', adminController.recordsGET)
+
 module.exports = router

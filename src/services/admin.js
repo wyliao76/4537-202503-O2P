@@ -1,6 +1,7 @@
 const { redis, CustomError } = require('../utilities')
 const usersModel = require('../models/users')
 const tokenModel = require('../models/tokens')
+const recordsModel = require('../models/records')
 
 
 const usersGET = () => {
@@ -58,10 +59,32 @@ const adjustTokenPOST = async (email, times) => {
     return result
 }
 
+const recordsGET = async () => {
+    const result = await recordsModel.aggregate([{
+        $group: {
+            _id: {
+                method: '$method',
+                route: '$route',
+            },
+            count: { $sum: 1 },
+        },
+    },
+    {
+        $project: {
+            _id: 0,
+            method: '$_id.method',
+            route: '$_id.route',
+            count: 1,
+        },
+    }])
+    return result
+}
+
 
 module.exports = {
     usersGET,
     banUserPOST,
     unBanUserPOST,
     adjustTokenPOST,
+    recordsGET,
 }
