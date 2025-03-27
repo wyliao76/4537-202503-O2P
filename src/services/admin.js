@@ -44,6 +44,20 @@ const unBanUserPOST = async (email) => {
     return result
 }
 
+const toggleBanUserPATCH = async (email, enable) => {
+    const result = await usersModel.findOneAndUpdate(
+        { email: email },
+        { enable: enable },
+        { new: true, projection: { email: 1, enable: 1 } },
+    )
+
+    if (!result || result.enable !== enable) {
+        throw new CustomError('500', 'Failed to toggle enable user')
+    }
+
+    return result
+}
+
 const adjustTokenPOST = async (email, times) => {
     const result = await tokenModel.findOneAndUpdate(
         { email: email },
@@ -64,4 +78,5 @@ module.exports = {
     banUserPOST,
     unBanUserPOST,
     adjustTokenPOST,
+    toggleBanUserPATCH,
 }
