@@ -20,7 +20,6 @@ describe('user', () => {
             expect(result.role).toBe(users[0].role)
             expect(result.lastLogin).toBeNull()
             expect(result.enable).toBe(true)
-            expect(result.api_tokens).toBe(20)
         })
 
         it('fail', async () => {

@@ -8,10 +8,10 @@ class AIManager {
         })
     }
 
-    async generate(userAnswers) {
+    async generate(quizType, userAnswers) {
         const [personaObject, imageUrl] = await Promise.all([
-            this.generatePersona(userAnswers),
-            this.generateImage(userAnswers),
+            this.generatePersona(quizType, userAnswers),
+            this.generateImage(quizType, userAnswers),
         ])
 
         return {
@@ -20,7 +20,7 @@ class AIManager {
         }
     }
 
-    async generateImage(userAnswers) {
+    async generateImage(quizType, userAnswers) {
         const completion1 = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
@@ -28,7 +28,7 @@ class AIManager {
                 {
                     role: 'user',
                     content: `Based on the following answers to personality questions,
-                    generate a prompt that will generate an image of a superhero that fits this persona: ${userAnswers}`,
+                    generate a prompt that will generate an image of a ${quizType} that fits this persona: ${userAnswers}`,
                 },
             ],
         })
@@ -52,14 +52,14 @@ class AIManager {
         return imageUrl
     }
 
-    async generatePersona(userAnswers) {
+    async generatePersona(quizType, userAnswers) {
         const completion = await this.openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
             messages: [
                 { role: 'system', content: 'You are a helpful assistant.' },
                 {
                     role: 'user',
-                    content: `Based on the following answers to personality questions, generate a short persona on a superhero in JSON format with the following fields: 
+                    content: `Based on the following answers to personality questions, generate a short persona on a ${quizType} in JSON format with the following fields: 
                     Name, Powers, Backstory, ArchNemesis. Here are the answers: ${userAnswers}
                     
                     Please structure the response as follows:
