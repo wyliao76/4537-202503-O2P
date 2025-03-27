@@ -6,11 +6,11 @@ const apiLogger = (req, res, next) => {
         if (![400, 401, 403, 404].includes(res.statusCode)) {
             try {
                 const { token } = req.cookies
-
+                console.log(req.originalUrl)
                 const result = await jwt.verify(token, process.env.SECRET)
                 const email = result.email
                 const method = req.method
-                const path = req.path
+                const path = new URL(req.originalUrl, `http://${req.headers.host}`).pathname // remove query params
 
                 const record = new Record({
                     method: method,
@@ -18,7 +18,6 @@ const apiLogger = (req, res, next) => {
                     email: email,
                 })
                 await record.save()
-                // console.log('API record logged')
             } catch (error) {
                 console.log(error)
                 console.log('Error writing api call record')
