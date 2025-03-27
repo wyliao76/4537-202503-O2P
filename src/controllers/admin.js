@@ -106,11 +106,21 @@ const adjustTokenPOST = async (req, res, next) => {
     }
 }
 
+const recordsGET = async (req, res, next) => {
+    try {
+        const result = await adminService.recordsGET()
+        return res.status(200).json({ msg: result })
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     isAdminGET,
     usersGET,
     banUserPOST,
     unBanUserPOST,
     adjustTokenPOST,
+    recordsGET,
     toggleBanUserPATCH
 }

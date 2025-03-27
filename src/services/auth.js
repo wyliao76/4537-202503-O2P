@@ -37,12 +37,15 @@ const registerPOST = async (email, password) => {
 }
 
 const loginPOST = async (email, password) => {
-    const user = await usersModel.findOne({ email: email }, { email: 1, password: 1 }).lean()
+    const user = await usersModel.findOne({ email: email }, { email: 1, password: 1, enable: 1 }).lean()
     if (!user) {
         throw new CustomError('404', 'User not found')
     }
     if (!await bcrypt.compare(password, user.password)) {
         throw new CustomError('403', 'Invalid password')
+    }
+    if (user.enable !== true) {
+        throw new CustomError('403', 'Account disabled')
     }
     // revoke token if exists
     const token = await redis.client.get(user.email)

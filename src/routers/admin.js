@@ -14,4 +14,6 @@ router.patch('/toggleBanUser', adminController.toggleBanUserPATCH)
 
 router.post('/adjustToken', adminController.adjustTokenPOST)
 
+router.get('/records', adminController.recordsGET)
+
 module.exports = router

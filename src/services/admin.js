@@ -1,16 +1,39 @@
 const { redis, CustomError } = require('../utilities')
 const usersModel = require('../models/users')
 const tokenModel = require('../models/tokens')
+const recordsModel = require('../models/records')
 
 
 const usersGET = () => {
-    return usersModel.find({}, {
-        email: 1,
-        role: 1,
-        api_tokens: 1,
-        lastLogin: 1,
-        enable: 1,
-    }).lean()
+    const result = usersModel.aggregate([
+        {
+            $lookup: {
+                from: 'records',
+                localField: 'email',
+                foreignField: 'email',
+                as: 'userRecords',
+            },
+        },
+        {
+            $addFields: {
+                apiCallCount: { $size: '$userRecords' },
+            },
+        },
+        {
+            $project: {
+                _id: 0,
+                email: 1,
+                role: 1,
+                enable: 1,
+                apiCallCount: 1,
+            },
+        },
+        {
+            $sort: { email: 1 },
+        },
+    ])
+
+    return result
 }
 
 const banUserPOST = async (email) => {
@@ -72,11 +95,36 @@ const adjustTokenPOST = async (email, times) => {
     return result
 }
 
+const recordsGET = async () => {
+    const result = await recordsModel.aggregate([{
+        $group: {
+            _id: {
+                method: '$method',
+                route: '$route',
+            },
+            count: { $sum: 1 },
+        },
+    },
+    {
+        $project: {
+            _id: 0,
+            method: '$_id.method',
+            route: '$_id.route',
+            count: 1,
+        },
+    },
+    {
+        $sort: { count: -1 }, // Sort by desc
+    }])
+    return result
+}
+
 
 module.exports = {
     usersGET,
     banUserPOST,
     unBanUserPOST,
     adjustTokenPOST,
+    recordsGET,
     toggleBanUserPATCH,
 }
