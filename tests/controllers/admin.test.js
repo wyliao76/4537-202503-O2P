@@ -1,5 +1,6 @@
 const usersModel = require('../../src/models/users')
 const tokensModel = require('../../src/models/tokens')
+const recordsModel = require('../../src/models/records')
 const { adminController } = require('../../src/controllers')
 const { adminService } = require('../../src/services')
 const Joi = require('joi')
@@ -7,6 +8,12 @@ const Joi = require('joi')
 const users = [
     { email: 'admin@gmail.com', password: 'admin', role: 'admin' },
     { email: 'test@gmail.com', password: '123', role: 'normal' },
+]
+
+const records = [
+    { method: 'GET', route: '/questions', email: 'test@gmail.com' },
+    { method: 'GET', route: '/questions', email: 'admin@gmail.com' },
+    { method: 'GET', route: '/admin/users', email: 'admin@gmail.com' },
 ]
 
 describe('admin', () => {
@@ -165,6 +172,28 @@ describe('admin', () => {
             await adminController.adjustTokenPOST(req, res, next)
 
             expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Times is required'))
+        })
+    })
+
+    describe('recordsGET', () => {
+        beforeEach(async () => {
+            await recordsModel.insertMany(records)
+        })
+
+        it('pass', async () => {
+            const aggregateRecords = await adminService.recordsGET()
+            const results = { msg: aggregateRecords }
+            const req = {}
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn(),
+            }
+            const next = jest.fn()
+
+            await adminController.recordsGET(req, res, next)
+
+            expect(res.status).toHaveBeenCalledWith(200)
+            expect(res.json).toHaveBeenCalledWith(results)
         })
     })
 })
