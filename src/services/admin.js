@@ -28,6 +28,9 @@ const usersGET = () => {
                 apiCallCount: 1,
             },
         },
+        {
+            $sort: { email: 1 },
+        },
     ])
 
     return result
