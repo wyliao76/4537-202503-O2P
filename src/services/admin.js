@@ -76,6 +76,9 @@ const recordsGET = async () => {
             route: '$_id.route',
             count: 1,
         },
+    },
+    {
+        $sort: { count: -1 }, // Sort by desc
     }])
     return result
 }
