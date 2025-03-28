@@ -44,18 +44,15 @@ const questionsGET = () => {
     return aiManager.generateQuestionBatch()
 }
 
-const personaPOST = async (body, email) => {
-    const quizType = body.quizType
-    const answers = JSON.stringify(body.answers)
-
+const personaPOST = async (params) => {
     // get resonse from AI
-    const response = await aiManager.generate(quizType, answers)
+    const response = await aiManager.generate(params.quizType, params.answers)
     if (!response) {
         throw new CustomError('500', 'Cannot generate persona')
     }
 
     // decrement API tokens
-    await decrementApiTokens(email)
+    await decrementApiTokens(params.email)
 
     // download image
     const uniqueFileName = `${response.persona.Name}-${uuidv4()}.png`
@@ -63,7 +60,7 @@ const personaPOST = async (body, email) => {
 
     // add users new persona to database
     const personaRecord = {
-        email: email,
+        email: params.email,
         persona: response,
         pathToImage: uniqueFileName,
     }
@@ -77,19 +74,18 @@ const personaPOST = async (body, email) => {
     return response
 }
 
-const personaDELETE = async (req, email) => {
-    const { imageName } = req.query
-    if (!imageName) {
+const personaDELETE = async (params) => {
+    if (!params.imageName) {
         throw new CustomError('image name not found')
     }
 
-    const result = await personasModel.deleteOne({ email: email, pathToImage: imageName })
+    const result = await personasModel.deleteOne({ email: params.email, pathToImage: params.imageName })
     if (result.deletedCount === 0) {
         throw new CustomError('could not delete persona')
     }
 
     // delete image from disk
-    await deleteImage(imageName)
+    await deleteImage(params.imageName)
 
     return result
 }
