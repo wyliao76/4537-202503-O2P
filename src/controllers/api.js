@@ -48,6 +48,19 @@ const personaPOST = async (req, res, next) => {
     }
 }
 
+const personaDELETE = async (req, res, next) => {
+    try {
+        const { token } = req.cookies || {}
+        const { email } = await jwt.decode(token) || {}
+
+        const result = await apiService.personaDELETE(req, email)
+
+        return res.status(200).json({ msg: result })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const savedPersonasGET = async (req, res, next) => {
     try {
         const { token } = req.cookies || {}
@@ -76,4 +89,5 @@ module.exports = {
     tokensGET,
     savedPersonasGET,
     personaImageGET,
+    personaDELETE,
 }

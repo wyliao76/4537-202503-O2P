@@ -77,6 +77,23 @@ const personaPOST = async (body, email) => {
     return response
 }
 
+const personaDELETE = async (req, email) => {
+    const { imageName } = req.query
+    if (!imageName) {
+        throw new CustomError('image name not found')
+    }
+
+    const result = await personasModel.deleteOne({ email: email, pathToImage: imageName })
+    if (result.deletedCount === 0) {
+        throw new CustomError('could not delete persona')
+    }
+
+    // delete image from disk
+    await deleteImage(imageName)
+
+    return result
+}
+
 const downloadImage = async (imageUrl, fileName) => {
     const response = await axios.get(imageUrl, { responseType: 'stream' })
 
@@ -94,6 +111,20 @@ const downloadImage = async (imageUrl, fileName) => {
     })
 }
 
+const deleteImage = async (fileName) => {
+    const filePath = path.resolve(__dirname, '../../images', fileName)
+
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                reject(new Error(`failed to delete: ${err.message}`))
+            } else {
+                resolve(`Image deleted: ${filePath}`)
+            }
+        })
+    })
+}
+
 const savedPersonaGET = async (email) => {
     const personas = await personasModel.find({ email: email }).lean()
 
@@ -103,7 +134,6 @@ const savedPersonaGET = async (email) => {
 
     return personas
 }
-
 
 const personaImageGET = async (req, res) => {
     const fileName = req.query.fileName
@@ -118,7 +148,6 @@ const personaImageGET = async (req, res) => {
         throw new CustomError('500', 'Image not found')
     }
 
-    console.log('Sending image:', imagePath)
     return res.sendFile(imagePath)
 }
 
@@ -130,4 +159,5 @@ module.exports = {
     tokensGET,
     savedPersonaGET,
     personaImageGET,
+    personaDELETE,
 }

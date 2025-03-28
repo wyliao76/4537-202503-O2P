@@ -14,4 +14,6 @@ router.get('/savedPersonas', apiController.savedPersonasGET)
 
 router.get('/personaImage', apiController.personaImageGET)
 
+router.delete('/deletePersona', apiController.personaDELETE)
+
 module.exports = router
