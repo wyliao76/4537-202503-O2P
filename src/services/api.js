@@ -133,7 +133,7 @@ const deleteImage = async (fileName) => {
 const savedPersonaGET = async (email) => {
     const personas = await personasModel.find({ email: email }).lean()
 
-    if (!personas || personas.length === 0) {
+    if (!personas) {
         throw new CustomError('500', 'Could not get personas')
     }
 
