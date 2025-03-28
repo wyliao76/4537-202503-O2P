@@ -95,9 +95,14 @@ const personaDELETE = async (req, email) => {
 }
 
 const downloadImage = async (imageUrl, fileName) => {
-    const response = await axios.get(imageUrl, { responseType: 'stream' })
+    const dirPath = path.resolve(__dirname, '../../images')
 
-    const filePath = path.resolve(__dirname, '../../images', `${fileName}`)
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true })
+    }
+
+    const filePath = path.join(dirPath, fileName)
+    const response = await axios.get(imageUrl, { responseType: 'stream' })
     const writer = fs.createWriteStream(filePath)
 
     response.data.pipe(writer)
