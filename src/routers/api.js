@@ -10,4 +10,10 @@ router.get('/quizzes', apiController.quizzesGET)
 
 router.get('/tokens', apiController.tokensGET)
 
+router.get('/savedPersonas', apiController.savedPersonasGET)
+
+router.get('/personaImage', apiController.personaImageGET)
+
+router.delete('/deletePersona', apiController.personaDELETE)
+
 module.exports = router

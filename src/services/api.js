@@ -2,7 +2,12 @@
 const { AIManager } = require('../utilities')
 const quizModel = require('../models/quizzes')
 const tokensModel = require('../models/tokens')
+const personasModel = require('../models/personas')
 const { CustomError } = require('../utilities')
+const axios = require('axios')
+const fs = require('fs')
+const path = require('path')
+const { v4: uuidv4 } = require('uuid')
 
 const aiManager = new AIManager()
 
@@ -39,15 +44,111 @@ const questionsGET = () => {
     return aiManager.generateQuestionBatch()
 }
 
-const personaPOST = async (body) => {
+const personaPOST = async (body, email) => {
     const quizType = body.quizType
     const answers = JSON.stringify(body.answers)
 
+    // get resonse from AI
     const response = await aiManager.generate(quizType, answers)
+    if (!response) {
+        throw new CustomError('500', 'Cannot generate persona')
+    }
+
+    // decrement API tokens
+    await decrementApiTokens(email)
+
+    // download image
+    const uniqueFileName = `${response.persona.Name}-${uuidv4()}.png`
+    await downloadImage(response.imageUrl, uniqueFileName)
+
+    // add users new persona to database
+    const personaRecord = {
+        email: email,
+        persona: response,
+        pathToImage: uniqueFileName,
+    }
+    const newPersona = await personasModel.create(personaRecord)
+    if (!newPersona) {
+        throw new CustomError('500', 'Cannot save persona')
+    }
 
     console.log(response)
 
     return response
+}
+
+const personaDELETE = async (req, email) => {
+    const { imageName } = req.query
+    if (!imageName) {
+        throw new CustomError('image name not found')
+    }
+
+    const result = await personasModel.deleteOne({ email: email, pathToImage: imageName })
+    if (result.deletedCount === 0) {
+        throw new CustomError('could not delete persona')
+    }
+
+    // delete image from disk
+    await deleteImage(imageName)
+
+    return result
+}
+
+const downloadImage = async (imageUrl, fileName) => {
+    const response = await axios.get(imageUrl, { responseType: 'stream' })
+
+    const filePath = path.resolve(__dirname, '../../images', `${fileName}`)
+    const writer = fs.createWriteStream(filePath)
+
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+        writer.on('finish', () => {
+            console.log(`Image saved as ${filePath}`)
+            resolve(filePath)
+        })
+        writer.on('error', reject)
+    })
+}
+
+const deleteImage = async (fileName) => {
+    const filePath = path.resolve(__dirname, '../../images', fileName)
+
+    return new Promise((resolve, reject) => {
+        fs.unlink(filePath, (err) => {
+            if (err) {
+                reject(new Error(`failed to delete: ${err.message}`))
+            } else {
+                resolve(`Image deleted: ${filePath}`)
+            }
+        })
+    })
+}
+
+const savedPersonaGET = async (email) => {
+    const personas = await personasModel.find({ email: email }).lean()
+
+    if (!personas || personas.length === 0) {
+        throw new CustomError('500', 'Could not get personas')
+    }
+
+    return personas
+}
+
+const personaImageGET = async (req, res) => {
+    const fileName = req.query.fileName
+
+    if (!fileName) {
+        throw new CustomError('400', 'Must provide filename')
+    }
+
+    const imagePath = path.resolve(__dirname, '../../images', fileName)
+
+    if (!fs.existsSync(imagePath)) {
+        throw new CustomError('500', 'Image not found')
+    }
+
+    return res.sendFile(imagePath)
 }
 
 module.exports = {
@@ -56,4 +157,7 @@ module.exports = {
     quizzesGET,
     decrementApiTokens,
     tokensGET,
+    savedPersonaGET,
+    personaImageGET,
+    personaDELETE,
 }
