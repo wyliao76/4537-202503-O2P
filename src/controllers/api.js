@@ -40,7 +40,16 @@ const personaPOST = async (req, res, next) => {
         const { token } = req.cookies || {}
         const { email } = await jwt.decode(token) || {}
 
-        const result = await apiService.personaPOST(req.body, email)
+        const { quizType } = req.body
+        const { answers } = JSON.stringify(req.body)
+
+        const params = {
+            email: email,
+            quizType: quizType,
+            answers: answers,
+        }
+
+        const result = await apiService.personaPOST(params)
 
         return res.status(200).json({ msg: result })
     } catch (error) {
@@ -53,7 +62,14 @@ const personaDELETE = async (req, res, next) => {
         const { token } = req.cookies || {}
         const { email } = await jwt.decode(token) || {}
 
-        const result = await apiService.personaDELETE(req, email)
+        const { imageName } = req.query
+
+        const params = {
+            email: email,
+            imageName: imageName,
+        }
+
+        const result = await apiService.personaDELETE(params)
 
         return res.status(200).json({ msg: result })
     } catch (error) {
