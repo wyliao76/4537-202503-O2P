@@ -1,5 +1,4 @@
 const usersModel = require('../../src/models/users')
-const tokensModel = require('../../src/models/tokens')
 const recordsModel = require('../../src/models/records')
 const { adminService, authService } = require('../../src/services')
 const { redis, CustomError } = require('../../src/utilities/index')
@@ -114,21 +113,6 @@ describe('admin', () => {
 
         it('failed (user not found)', async () => {
             await expect(adminService.toggleBanUserPATCH('nouser@gmail.com')).rejects.toThrow(new CustomError('500', 'Failed to toggle enable user'))
-        })
-    })
-
-    describe('adjustTokenPOST', () => {
-        beforeEach(async () => {
-            await usersModel.insertMany(users)
-            await tokensModel.insertMany(users)
-        })
-
-        it('pass', async () => {
-            const times = 100
-            const result = await adminService.adjustTokenPOST(users[1].email, times)
-
-            expect(result.email).toBe(users[1].email)
-            expect(result.tokens).toBe(times)
         })
     })
 
