@@ -70,20 +70,22 @@ const logoutGET = async (req, res, next) => {
         const { token } = req.cookies || {}
 
         await authService.logoutGET(token)
+
+        res.clearCookie('token', {
+            httpOnly: true,
+            secure: true, // Ensure this matches your login cookie settings
+            sameSite: 'None',
+        })
+
         return res.status(200).json({ msg: 'ok' })
     } catch (error) {
         next(error)
     }
 }
 
-const resetPasswordPOST = async (req, res, next) => {
-}
-
-
 module.exports = {
     isLoginGET,
     registerPOST,
     loginPOST,
     logoutGET,
-    resetPasswordPOST,
 }

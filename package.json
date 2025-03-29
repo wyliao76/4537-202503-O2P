@@ -7,7 +7,7 @@
         "lint": "esw . --color --fix",
         "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
         "coverage": "cross-env NODE_ENV=test jest --detectOpenHandles --coverage",
-        "local": "cross-env NODE_ENV=local nodemon src/index.js",
+        "local": "cross-env NODE_ENV=local nodemon --ext js,yml src/index.js --watch src --watch src/openapi.yml",
         "dev": "cross-env NODE_ENV=dev nodemon src/index.js",
         "prod": "cross-env NODE_ENV=prod nodemon src/index.js"
     },
@@ -46,11 +46,13 @@
         "express": "^4.21.2",
         "ioredis": "^5.6.0",
         "joi": "^17.13.1",
+        "js-yaml": "^4.1.0",
         "jsonwebtoken": "^9.0.2",
         "mime": "^4.0.6",
         "mongoose": "^8.12.1",
         "nodemon": "^3.1.0",
         "openai": "^4.86.2",
+        "swagger-ui-express": "^5.0.1",
         "uuid": "^11.1.0"
     },
     "devDependencies": {

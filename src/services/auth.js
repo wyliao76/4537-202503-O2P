@@ -61,12 +61,8 @@ const logoutGET = async (token) => {
     return true
 }
 
-const resetPasswordPOST = async ({ userId, password }) => {
-}
-
 module.exports = {
     registerPOST,
     loginPOST,
     logoutGET,
-    resetPasswordPOST,
 }
