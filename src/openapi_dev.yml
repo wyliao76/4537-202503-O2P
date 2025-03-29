@@ -1,0 +1,288 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Auth API
+  description: "Fursona"
+components:
+  securitySchemes:
+    CookieAuth: # not supported by browser atm
+      type: apiKey
+      in: cookie
+      name: token
+servers:
+  - url: /dev
+  - url: /dev/v1
+paths:
+  /health:
+    get:
+      responses:
+        '200':
+           description: health check
+  /isLogin:
+    get:
+      security:
+        - CookieAuth: []
+      responses:
+        '200':
+           description: check if logged in
+  /register:
+    post:
+      summary: Register a new user
+      description: Registers a new user with the provided details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  default: 'example@gmail.com'
+                password:
+                  type: string
+                  default: '123'
+
+      responses:
+        '200':
+          description: User registered successfully
+        '400':
+          description: Invalid input
+        '409':
+          description: Account already registered with this email
+  /login:
+    post:
+      summary: Log in a user
+      description: Logs in a user with the provided credentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  default: 'example@gmail.com'
+                password:
+                  type: string
+                  default: '123'
+      responses:
+        '200':
+          description: User logged in successfully
+          headers:
+            Set-Cookie:
+              description: JWT token stored in a cookie
+              schema:
+                type: string
+        '403':
+          description: Unauthorized
+        '404':
+          description: User not found
+  /logout:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Log out a user
+      description: Logs out the currently logged-in user
+      responses:
+        '200':
+          description: User logged out successfully
+          headers:
+            Set-Cookie:
+              description: Removes the JWT cookie
+              schema:
+                type: string
+  /admin:
+      get:
+        security:
+          - CookieAuth: []
+        summary: Check if user is an admin
+        description: Determines whether the requesting user has admin privileges.
+        responses:
+          '200':
+            description: User is an admin
+          '403':
+            description: User is not authorized
+
+  /admin/users:
+      get:
+        security:
+          - CookieAuth: []
+        summary: Get list of users
+        description: Returns a list of all registered users.
+        responses:
+          '200':
+            description: Successfully retrieved list of users
+          '403':
+            description: Unauthorized access
+
+  /admin/toggleBanUser:
+      patch:
+        security:
+          - CookieAuth: []
+        summary: Toggle ban status of a user
+        description: Bans or unbans a user based on their current status.
+        parameters:
+          - name: email
+            in: query
+            required: true
+            schema:
+              type: string
+              example: "example@gmail.com"
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - enable
+                properties:
+                  enable:
+                    type: boolean
+                    example: false
+        responses:
+          '200':
+            description: Successfully toggled ban status
+          '400':
+            description: Invalid input
+          '403':
+            description: Unauthorized access
+
+  /admin/records:
+      get:
+        security:
+          - CookieAuth: []
+        summary: Get user records
+        description: Retrieves user activity records.
+        responses:
+          '200':
+            description: Successfully retrieved records
+          '403':
+            description: Unauthorized access
+  /user:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Get user records
+      description: Retrieves user activity records.
+      responses:
+        '200':
+          description: Successfully retrieved records
+        '403':
+          description: Unauthorized access
+        '404':
+          description: User not found
+  /api/questions:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Retrieve questions
+      description: Fetch a list of questions.
+      responses:
+        '200':
+          description: Questions retrieved successfully
+
+  /api/persona:
+    post:
+      security:
+        - CookieAuth: []
+      summary: Create a persona
+      description: Submits persona details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quizType
+                - answers
+              properties:
+                quizType:
+                  type: string
+                  example: "general"
+                answers:
+                  type: array
+                  items:
+                    type: string
+                  example: ["answer1", "answer2"]
+      responses:
+        '201':
+          description: Persona created successfully
+
+  /api/quizzes:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Retrieve quizzes
+      description: Fetch a list of available quizzes.
+      responses:
+        '200':
+          description: Quizzes retrieved successfully
+
+  /api/tokens:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Retrieve tokens
+      description: Fetch user tokens.
+      responses:
+        '200':
+          description: Tokens retrieved successfully
+
+  /api/savedPersonas:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Retrieve saved personas
+      description: Fetch saved personas for a user.
+      responses:
+        '200':
+          description: Saved personas retrieved successfully
+
+  /api/personaImage:
+    get:
+      security:
+        - CookieAuth: []
+      summary: Retrieve persona image
+      description: Fetches an image of a persona based on the given name.
+      parameters:
+        - name: fileName
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "persona_image.png"
+      responses:
+        '200':
+          description: Persona image retrieved successfully
+
+  /api/deletePersona:
+    delete:
+      security:
+        - CookieAuth: []
+      summary: Delete a persona
+      description: Deletes a persona for a given email and image name.
+      parameters:
+        - name: imageName
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "persona_image.png"
+      responses:
+        '200':
+          description: Persona deleted successfully
+        '400':
+          description: Bad request (e.g., missing parameters)
+        '404':
+          description: Persona not found

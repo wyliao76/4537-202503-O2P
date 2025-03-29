@@ -9,7 +9,8 @@ const { authRouter, apiRouter, adminRouter, userRouter } = require('./routers')
 const cors = require('cors')
 const { CustomError, auth, apiLogger } = require('./utilities')
 
-const openApiPath = path.join(__dirname, 'openapi.yml')
+const openApiFilename = process.env.NODE_ENV === 'dev' ? 'openapi_dev.yml' : 'openapi.yml'
+const openApiPath = path.join(__dirname, openApiFilename)
 const schema = jsYaml.load(fs.readFileSync(openApiPath))
 
 const app = express()
