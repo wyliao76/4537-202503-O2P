@@ -1,4 +1,4 @@
-const { redis, CustomError } = require('../utilities')
+const { CustomError } = require('../utilities')
 const usersModel = require('../models/users')
 const tokenModel = require('../models/tokens')
 const recordsModel = require('../models/records')

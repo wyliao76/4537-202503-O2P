@@ -1,8 +1,7 @@
-const { redis, CustomError } = require('../../src/utilities/index')
 const usersModel = require('../../src/models/users')
 const tokensModel = require('../../src/models/tokens')
 const recordsModel = require('../../src/models/records')
-const { adminService, authService } = require('../../src/services')
+const { adminService } = require('../../src/services')
 
 const users = [
     { email: 'admin@gmail.com', password: 'admin', role: 'admin', enable: true },
