@@ -54,19 +54,19 @@ const toggleBanUserPATCH = async (email, enable) => {
     return result
 }
 
-const adjustTokenPOST = async (email, times) => {
-    const result = await tokenModel.findOneAndUpdate(
-        { email: email },
-        { tokens: times },
-        { new: true, projection: { email: 1, tokens: 1 } },
-    )
+// const adjustTokenPOST = async (email, times) => {
+//     const result = await tokenModel.findOneAndUpdate(
+//         { email: email },
+//         { tokens: times },
+//         { new: true, projection: { email: 1, tokens: 1 } },
+//     )
 
-    if (!result || result.tokens !== times) {
-        throw new CustomError('500', 'Failed to adjust api tokens')
-    }
+//     if (!result || result.tokens !== times) {
+//         throw new CustomError('500', 'Failed to adjust api tokens')
+//     }
 
-    return result
-}
+//     return result
+// }
 
 const recordsGET = async () => {
     const result = await recordsModel.aggregate([{
@@ -95,7 +95,6 @@ const recordsGET = async () => {
 
 module.exports = {
     usersGET,
-    adjustTokenPOST,
     recordsGET,
     toggleBanUserPATCH,
 }

@@ -117,21 +117,6 @@ describe('admin', () => {
         })
     })
 
-    describe('adjustTokenPOST', () => {
-        beforeEach(async () => {
-            await usersModel.insertMany(users)
-            await tokensModel.insertMany(users)
-        })
-
-        it('pass', async () => {
-            const times = 100
-            const result = await adminService.adjustTokenPOST(users[1].email, times)
-
-            expect(result.email).toBe(users[1].email)
-            expect(result.tokens).toBe(times)
-        })
-    })
-
     describe('recordsGET', () => {
         beforeEach(async () => {
             await recordsModel.insertMany(records)
