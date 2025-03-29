@@ -47,9 +47,11 @@
         "ioredis": "^5.6.0",
         "joi": "^17.13.1",
         "jsonwebtoken": "^9.0.2",
+        "mime": "^4.0.6",
         "mongoose": "^8.12.1",
         "nodemon": "^3.1.0",
-        "openai": "^4.86.2"
+        "openai": "^4.86.2",
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "cross-env": "^7.0.3",
