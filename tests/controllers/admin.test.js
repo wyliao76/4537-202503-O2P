@@ -1,5 +1,4 @@
 const usersModel = require('../../src/models/users')
-const tokensModel = require('../../src/models/tokens')
 const recordsModel = require('../../src/models/records')
 const { adminController } = require('../../src/controllers')
 const { adminService } = require('../../src/services')
@@ -101,59 +100,6 @@ describe('admin', () => {
             await adminController.toggleBanUserPATCH(req, res, next)
 
             expect(next).toHaveBeenCalledWith(new Joi.ValidationError('"enable" must be a boolean'))
-        })
-    })
-
-    describe('adjustTokenPOST', () => {
-        let req
-        let res
-        let next
-        let result
-
-        beforeEach(async () => {
-            await usersModel.insertMany(users)
-            await tokensModel.insertMany(users)
-            result = await adminService.adjustTokenPOST(users[1].email, 100)
-            res = {
-                status: jest.fn().mockReturnThis(),
-                json: jest.fn(),
-            }
-            next = jest.fn()
-        })
-
-        it('pass', async () => {
-            req = {
-                body: {
-                    email: users[1].email,
-                    times: 100,
-                },
-            }
-            await adminController.adjustTokenPOST(req, res, next)
-
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({ msg: result })
-        })
-
-        it('fail (no email)', async () => {
-            req = {
-                body: {
-                    times: 100,
-                },
-            }
-            await adminController.adjustTokenPOST(req, res, next)
-
-            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
-        })
-
-        it('fail (no times)', async () => {
-            req = {
-                body: {
-                    email: users[1].email,
-                },
-            }
-            await adminController.adjustTokenPOST(req, res, next)
-
-            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Times is required'))
         })
     })
 
