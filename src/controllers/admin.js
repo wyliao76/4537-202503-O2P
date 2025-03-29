@@ -15,9 +15,52 @@ const usersGET = async (req, res, next) => {
     }
 }
 
-const banUserPOST = async (req, res, next) => {
+// const banUserPOST = async (req, res, next) => {
+//     try {
+//         const { email = '' } = req.body
+
+//         const schema = Joi.object({
+//             email: Joi.string().max(24).required().email().messages({
+//                 'string.email': 'Not a valid email',
+//                 'string.max': 'Emails have a maximum length of 24 characters',
+//                 'string.empty': 'Email cannot be empty',
+//             }),
+//         })
+//         await schema.validateAsync({ email }, { abortEarly: false })
+
+//         const result = await adminService.banUserPOST(email)
+
+//         return res.status(200).json({ msg: result })
+//     } catch (error) {
+//         next(error)
+//     }
+// }
+
+// const unBanUserPOST = async (req, res, next) => {
+//     try {
+//         const { email = '' } = req.body
+
+//         const schema = Joi.object({
+//             email: Joi.string().max(24).required().email().messages({
+//                 'string.email': 'Not a valid email',
+//                 'string.max': 'Emails have a maximum length of 24 characters',
+//                 'string.empty': 'Email cannot be empty',
+//             }),
+//         })
+//         await schema.validateAsync({ email }, { abortEarly: false })
+
+//         const result = await adminService.unBanUserPOST(email)
+
+//         return res.status(200).json({ msg: result })
+//     } catch (error) {
+//         next(error)
+//     }
+// }
+
+const toggleBanUserPATCH = async (req, res, next) => {
     try {
-        const { email = '' } = req.body
+        const { email = '' } = req.query
+        const { enable = '' } = req.body
 
         const schema = Joi.object({
             email: Joi.string().max(24).required().email().messages({
@@ -26,30 +69,10 @@ const banUserPOST = async (req, res, next) => {
                 'string.empty': 'Email cannot be empty',
             }),
         })
+
         await schema.validateAsync({ email }, { abortEarly: false })
 
-        const result = await adminService.banUserPOST(email)
-
-        return res.status(200).json({ msg: result })
-    } catch (error) {
-        next(error)
-    }
-}
-
-const unBanUserPOST = async (req, res, next) => {
-    try {
-        const { email = '' } = req.body
-
-        const schema = Joi.object({
-            email: Joi.string().max(24).required().email().messages({
-                'string.email': 'Not a valid email',
-                'string.max': 'Emails have a maximum length of 24 characters',
-                'string.empty': 'Email cannot be empty',
-            }),
-        })
-        await schema.validateAsync({ email }, { abortEarly: false })
-
-        const result = await adminService.unBanUserPOST(email)
+        const result = await adminService.toggleBanUserPATCH(email, enable)
 
         return res.status(200).json({ msg: result })
     } catch (error) {
@@ -95,8 +118,9 @@ const recordsGET = async (req, res, next) => {
 module.exports = {
     isAdminGET,
     usersGET,
-    banUserPOST,
-    unBanUserPOST,
+    // banUserPOST,
+    // unBanUserPOST,
     adjustTokenPOST,
     recordsGET,
+    toggleBanUserPATCH
 }

@@ -21,7 +21,7 @@ app.use(cors({
             callback(new CustomError('400', 'Not allowed by CORS'))
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }))
