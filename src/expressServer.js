@@ -23,7 +23,6 @@ app.use(express.urlencoded({ extended: true }))
 const whitelist = [process.env.FRONTEND_ORIGIN, process.env.BACKEND_ORIGIN, null, 'http://localhost:3000']
 app.use(cors({
     origin: (origin, callback) => {
-        console.log(origin)
         if (!origin || whitelist.indexOf(origin) !== -1) {
             callback(null, true)
         } else {
