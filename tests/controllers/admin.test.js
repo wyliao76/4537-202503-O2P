@@ -43,7 +43,7 @@ describe('admin', () => {
         })
     })
 
-    describe('banUserPOST', () => {
+    describe('toggleBanUserPATCH', () => {
         let req
         let res
         let next
@@ -51,12 +51,12 @@ describe('admin', () => {
 
         beforeEach(async () => {
             await usersModel.insertMany(users)
-            result = await adminService.banUserPOST(users[1].email)
+            result = await adminService.toggleBanUserPATCH(users[1].email, false)
             // bugged
             // result = await usersModel.findOne({ email: users[1].email }, { email: 1, enable: 1 }).lean()
             // result.enable = false
             res = {
-                status: jest.fn().mockReturnThis(200),
+                status: jest.fn().mockReturnThis(),
                 json: jest.fn().mockReturnThis({ msg: result }),
             }
             next = jest.fn()
@@ -64,11 +64,14 @@ describe('admin', () => {
 
         it('pass', async () => {
             req = {
-                body: {
+                query: {
                     email: users[1].email,
                 },
+                body: {
+                    enable: false,
+                },
             }
-            await adminController.banUserPOST(req, res, next)
+            await adminController.toggleBanUserPATCH(req, res, next)
 
             expect(res.status).toHaveBeenCalledWith(200)
             expect(res.json).toHaveBeenCalledWith({ msg: result })
@@ -76,49 +79,28 @@ describe('admin', () => {
 
         it('fail (no email)', async () => {
             req = {
-                body: {},
-            }
-            await adminController.banUserPOST(req, res, next)
-
-            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
-        })
-    })
-
-    describe('unBanUserPOST', () => {
-        let req
-        let res
-        let next
-        let result
-
-        beforeEach(async () => {
-            await usersModel.insertMany(users)
-            result = await adminService.unBanUserPOST(users[1].email)
-            res = {
-                status: jest.fn().mockReturnThis(200),
-                json: jest.fn().mockReturnThis({ msg: result }),
-            }
-            next = jest.fn()
-        })
-
-        it('pass', async () => {
-            req = {
+                query: {
+                },
                 body: {
-                    email: users[1].email,
+                    enable: false,
                 },
             }
-            await adminController.unBanUserPOST(req, res, next)
-
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({ msg: result })
-        })
-
-        it('fail (no email)', async () => {
-            req = {
-                body: {},
-            }
-            await adminController.unBanUserPOST(req, res, next)
+            await adminController.toggleBanUserPATCH(req, res, next)
 
             expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
+        })
+
+        it('fail (no enable)', async () => {
+            req = {
+                query: {
+                    email: users[1].email,
+                },
+                body: {
+                },
+            }
+            await adminController.toggleBanUserPATCH(req, res, next)
+
+            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('"enable" must be a boolean'))
         })
     })
 

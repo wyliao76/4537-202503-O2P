@@ -36,32 +36,19 @@ const usersGET = () => {
     return result
 }
 
-const banUserPOST = async (email) => {
+const toggleBanUserPATCH = async (email, enable) => {
     const result = await usersModel.findOneAndUpdate(
         { email: email },
-        { enable: false },
+        { enable: enable },
         { new: true, projection: { email: 1, enable: 1 } },
     )
 
-    if (!result || result.enable === true) {
-        throw new CustomError('500', 'Failed to disable user')
+    if (!result || result.enable !== enable) {
+        throw new CustomError('500', 'Failed to toggle enable user')
     }
 
-    // don't care if not exists
-    await redis.client.del(result.email)
-
-    return result
-}
-
-const unBanUserPOST = async (email) => {
-    const result = await usersModel.findOneAndUpdate(
-        { email: email },
-        { enable: true },
-        { new: true, projection: { email: 1, enable: 1 } },
-    )
-
-    if (!result || result.enable === false) {
-        throw new CustomError('500', 'Failed to enable user')
+    if (enable === false) {
+        await redis.client.del(result.email)
     }
 
     return result
@@ -108,8 +95,7 @@ const recordsGET = async () => {
 
 module.exports = {
     usersGET,
-    banUserPOST,
-    unBanUserPOST,
     adjustTokenPOST,
     recordsGET,
+    toggleBanUserPATCH,
 }
