@@ -1,5 +1,4 @@
 const usersModel = require('../../src/models/users')
-const tokensModel = require('../../src/models/tokens')
 const recordsModel = require('../../src/models/records')
 const { adminController } = require('../../src/controllers')
 const { adminService } = require('../../src/services')
