@@ -69,8 +69,6 @@ const personaPOST = async (params) => {
         throw new CustomError('500', 'Cannot save persona')
     }
 
-    console.log(response)
-
     return response
 }
 
