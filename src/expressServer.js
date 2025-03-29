@@ -20,7 +20,7 @@ app.use(compression())
 app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ extended: true }))
 
-const whitelist = [process.env.FRONTEND_ORIGIN, 'null', 'http://localhost:3000']
+const whitelist = [process.env.FRONTEND_ORIGIN, process.env.BACKEND_ORIGIN, null, 'http://localhost:3000']
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin || whitelist.indexOf(origin) !== -1) {
