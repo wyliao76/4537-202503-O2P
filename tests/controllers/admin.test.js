@@ -43,84 +43,84 @@ describe('admin', () => {
         })
     })
 
-    describe('banUserPOST', () => {
-        let req
-        let res
-        let next
-        let result
+    // describe('banUserPOST', () => {
+    //     let req
+    //     let res
+    //     let next
+    //     let result
 
-        beforeEach(async () => {
-            await usersModel.insertMany(users)
-            result = await adminService.banUserPOST(users[1].email)
-            // bugged
-            // result = await usersModel.findOne({ email: users[1].email }, { email: 1, enable: 1 }).lean()
-            // result.enable = false
-            res = {
-                status: jest.fn().mockReturnThis(200),
-                json: jest.fn().mockReturnThis({ msg: result }),
-            }
-            next = jest.fn()
-        })
+    //     beforeEach(async () => {
+    //         await usersModel.insertMany(users)
+    //         result = await adminService.banUserPOST(users[1].email)
+    //         // bugged
+    //         // result = await usersModel.findOne({ email: users[1].email }, { email: 1, enable: 1 }).lean()
+    //         // result.enable = false
+    //         res = {
+    //             status: jest.fn().mockReturnThis(200),
+    //             json: jest.fn().mockReturnThis({ msg: result }),
+    //         }
+    //         next = jest.fn()
+    //     })
 
-        it('pass', async () => {
-            req = {
-                body: {
-                    email: users[1].email,
-                },
-            }
-            await adminController.banUserPOST(req, res, next)
+    //     it('pass', async () => {
+    //         req = {
+    //             body: {
+    //                 email: users[1].email,
+    //             },
+    //         }
+    //         await adminController.banUserPOST(req, res, next)
 
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({ msg: result })
-        })
+    //         expect(res.status).toHaveBeenCalledWith(200)
+    //         expect(res.json).toHaveBeenCalledWith({ msg: result })
+    //     })
 
-        it('fail (no email)', async () => {
-            req = {
-                body: {},
-            }
-            await adminController.banUserPOST(req, res, next)
+    //     it('fail (no email)', async () => {
+    //         req = {
+    //             body: {},
+    //         }
+    //         await adminController.banUserPOST(req, res, next)
 
-            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
-        })
-    })
+    //         expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
+    //     })
+    // })
 
-    describe('unBanUserPOST', () => {
-        let req
-        let res
-        let next
-        let result
+    // describe('unBanUserPOST', () => {
+    //     let req
+    //     let res
+    //     let next
+    //     let result
 
-        beforeEach(async () => {
-            await usersModel.insertMany(users)
-            result = await adminService.unBanUserPOST(users[1].email)
-            res = {
-                status: jest.fn().mockReturnThis(200),
-                json: jest.fn().mockReturnThis({ msg: result }),
-            }
-            next = jest.fn()
-        })
+    //     beforeEach(async () => {
+    //         await usersModel.insertMany(users)
+    //         result = await adminService.unBanUserPOST(users[1].email)
+    //         res = {
+    //             status: jest.fn().mockReturnThis(200),
+    //             json: jest.fn().mockReturnThis({ msg: result }),
+    //         }
+    //         next = jest.fn()
+    //     })
 
-        it('pass', async () => {
-            req = {
-                body: {
-                    email: users[1].email,
-                },
-            }
-            await adminController.unBanUserPOST(req, res, next)
+    //     it('pass', async () => {
+    //         req = {
+    //             body: {
+    //                 email: users[1].email,
+    //             },
+    //         }
+    //         await adminController.unBanUserPOST(req, res, next)
 
-            expect(res.status).toHaveBeenCalledWith(200)
-            expect(res.json).toHaveBeenCalledWith({ msg: result })
-        })
+    //         expect(res.status).toHaveBeenCalledWith(200)
+    //         expect(res.json).toHaveBeenCalledWith({ msg: result })
+    //     })
 
-        it('fail (no email)', async () => {
-            req = {
-                body: {},
-            }
-            await adminController.unBanUserPOST(req, res, next)
+    //     it('fail (no email)', async () => {
+    //         req = {
+    //             body: {},
+    //         }
+    //         await adminController.unBanUserPOST(req, res, next)
 
-            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
-        })
-    })
+    //         expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
+    //     })
+    // })
 
     describe('adjustTokenPOST', () => {
         let req

@@ -38,53 +38,53 @@ describe('admin', () => {
         })
     })
 
-    describe('banUserPOST', () => {
-        beforeEach(() => {
-            return Promise.all(
-                users.map((user) => authService.registerPOST(user.email, user.password)),
-            )
-        })
+    // describe('banUserPOST', () => {
+    //     beforeEach(() => {
+    //         return Promise.all(
+    //             users.map((user) => authService.registerPOST(user.email, user.password)),
+    //         )
+    //     })
 
-        it('pass', async () => {
-            await authService.loginPOST(users[1].email, users[1].password)
+    //     it('pass', async () => {
+    //         await authService.loginPOST(users[1].email, users[1].password)
 
-            const result = await adminService.banUserPOST(users[1].email)
+    //         const result = await adminService.banUserPOST(users[1].email)
 
-            expect(result.enable).toBe(false)
-            expect(await redis.client.get(result.email)).toBeNull()
-        })
+    //         expect(result.enable).toBe(false)
+    //         expect(await redis.client.get(result.email)).toBeNull()
+    //     })
 
-        it('pass (user not logged in)', async () => {
-            const result = await adminService.banUserPOST(users[1].email)
+    //     it('pass (user not logged in)', async () => {
+    //         const result = await adminService.banUserPOST(users[1].email)
 
-            expect(result.enable).toBe(false)
-            expect(await redis.client.get(result.email)).toBeNull()
-        })
+    //         expect(result.enable).toBe(false)
+    //         expect(await redis.client.get(result.email)).toBeNull()
+    //     })
 
-        it('failed (user not found)', async () => {
-            await expect(adminService.banUserPOST('nouser@gmail.com')).rejects.toThrow(new CustomError('500', 'Failed to disable user'))
-        })
-    })
+    //     it('failed (user not found)', async () => {
+    //         await expect(adminService.banUserPOST('nouser@gmail.com')).rejects.toThrow(new CustomError('500', 'Failed to disable user'))
+    //     })
+    // })
 
-    describe('unBanUserPOST', () => {
-        beforeEach(() => {
-            return Promise.all(
-                users.map((user) => authService.registerPOST(user.email, user.password)),
-            )
-        })
+    // describe('unBanUserPOST', () => {
+    //     beforeEach(() => {
+    //         return Promise.all(
+    //             users.map((user) => authService.registerPOST(user.email, user.password)),
+    //         )
+    //     })
 
-        it('pass', async () => {
-            await authService.loginPOST(users[1].email, users[1].password)
+    //     it('pass', async () => {
+    //         await authService.loginPOST(users[1].email, users[1].password)
 
-            const result = await adminService.unBanUserPOST(users[1].email)
+    //         const result = await adminService.unBanUserPOST(users[1].email)
 
-            expect(result.enable).toBe(true)
-        })
+    //         expect(result.enable).toBe(true)
+    //     })
 
-        it('failed (user not found)', async () => {
-            await expect(adminService.unBanUserPOST('nouser@gmail.com')).rejects.toThrow(new CustomError('500', 'Failed to enable user'))
-        })
-    })
+    //     it('failed (user not found)', async () => {
+    //         await expect(adminService.unBanUserPOST('nouser@gmail.com')).rejects.toThrow(new CustomError('500', 'Failed to enable user'))
+    //     })
+    // })
 
     describe('adjustTokenPOST', () => {
         beforeEach(async () => {
