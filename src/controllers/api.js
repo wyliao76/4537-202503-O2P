@@ -27,7 +27,6 @@ const tokensGET = async (req, res, next) => {
         const { email } = await jwt.decode(token) || {}
 
         const result = await apiService.tokensGET(email)
-        console.log(result)
 
         return res.status(200).json({ msg: result })
     } catch (error) {
@@ -41,7 +40,7 @@ const personaPOST = async (req, res, next) => {
         const { email } = await jwt.decode(token) || {}
 
         const { quizType } = req.body
-        const { answers } = JSON.stringify(req.body)
+        const answers = JSON.stringify(req.body.answers)
 
         const params = {
             email: email,
