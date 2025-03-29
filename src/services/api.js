@@ -6,6 +6,9 @@ const personasModel = require('../models/personas')
 const { CustomError } = require('../utilities')
 const axios = require('axios')
 const fs = require('fs')
+const { mkdir } = require('node:fs/promises')
+const { unlink } = require('node:fs/promises')
+const { access } = require('fs/promises')
 const path = require('path')
 const { v4: uuidv4 } = require('uuid')
 
@@ -91,12 +94,11 @@ const personaDELETE = async (params) => {
 const downloadImage = async (imageUrl, fileName) => {
     const dirPath = path.resolve(__dirname, '../../images')
 
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true })
-    }
+    await mkdir(dirPath, { recursive: true })
 
     const filePath = path.join(dirPath, fileName)
     const response = await axios.get(imageUrl, { responseType: 'stream' })
+
     const writer = fs.createWriteStream(filePath)
 
     response.data.pipe(writer)
@@ -113,22 +115,14 @@ const downloadImage = async (imageUrl, fileName) => {
 const deleteImage = async (fileName) => {
     const filePath = path.resolve(__dirname, '../../images', fileName)
 
-    return new Promise((resolve, reject) => {
-        fs.unlink(filePath, (err) => {
-            if (err) {
-                reject(new Error(`failed to delete: ${err.message}`))
-            } else {
-                resolve(`Image deleted: ${filePath}`)
-            }
-        })
-    })
+    await unlink(filePath)
 }
 
 const savedPersonaGET = async (email) => {
     const personas = await personasModel.find({ email: email }).lean()
 
     if (!personas) {
-        throw new CustomError('500', 'Could not get personas')
+        throw new CustomError('404', 'Could not get personas')
     }
 
     return personas
@@ -143,9 +137,9 @@ const personaImageGET = async (req, res) => {
 
     const imagePath = path.resolve(__dirname, '../../images', fileName)
 
-    if (!fs.existsSync(imagePath)) {
-        throw new CustomError('500', 'Image not found')
-    }
+    await access(imagePath).catch(() => {
+        throw new CustomError('404', 'Image not found')
+    })
 
     return res.sendFile(imagePath)
 }
