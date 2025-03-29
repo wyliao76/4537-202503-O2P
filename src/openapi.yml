@@ -157,36 +157,6 @@ paths:
           '403':
             description: Unauthorized access
 
-  /admin/adjustToken:
-      post:
-        security:
-          - CookieAuth: []
-        summary: Adjust user's token balance
-        description: Modifies the number of tokens assigned to a user.
-        requestBody:
-          required: true
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - email
-                  - times
-                properties:
-                  email:
-                    type: string
-                    example: "example@gmail.com"
-                  times:
-                    type: integer
-                    example: 100
-        responses:
-          '200':
-            description: Successfully adjusted token balance
-          '400':
-            description: Invalid input
-          '403':
-            description: Unauthorized access
-
   /admin/records:
       get:
         security:
