@@ -43,6 +43,67 @@ describe('admin', () => {
         })
     })
 
+    describe('toggleBanUserPATCH', () => {
+        let req
+        let res
+        let next
+        let result
+
+        beforeEach(async () => {
+            await usersModel.insertMany(users)
+            result = await adminService.toggleBanUserPATCH(users[1].email, false)
+            // bugged
+            // result = await usersModel.findOne({ email: users[1].email }, { email: 1, enable: 1 }).lean()
+            // result.enable = false
+            res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn().mockReturnThis({ msg: result }),
+            }
+            next = jest.fn()
+        })
+
+        it('pass', async () => {
+            req = {
+                query: {
+                    email: users[1].email,
+                },
+                body: {
+                    enable: false,
+                },
+            }
+            await adminController.toggleBanUserPATCH(req, res, next)
+
+            expect(res.status).toHaveBeenCalledWith(200)
+            expect(res.json).toHaveBeenCalledWith({ msg: result })
+        })
+
+        it('fail (no email)', async () => {
+            req = {
+                query: {
+                },
+                body: {
+                    enable: false,
+                },
+            }
+            await adminController.toggleBanUserPATCH(req, res, next)
+
+            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('Email cannot be empty'))
+        })
+
+        it('fail (no enable)', async () => {
+            req = {
+                query: {
+                    email: users[1].email,
+                },
+                body: {
+                },
+            }
+            await adminController.toggleBanUserPATCH(req, res, next)
+
+            expect(next).toHaveBeenCalledWith(new Joi.ValidationError('"enable" must be a boolean'))
+        })
+    })
+
     describe('adjustTokenPOST', () => {
         let req
         let res

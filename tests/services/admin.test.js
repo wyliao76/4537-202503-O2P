@@ -1,7 +1,8 @@
 const usersModel = require('../../src/models/users')
 const tokensModel = require('../../src/models/tokens')
 const recordsModel = require('../../src/models/records')
-const { adminService } = require('../../src/services')
+const { adminService, authService } = require('../../src/services')
+const { redis, CustomError } = require('../../src/utilities/index')
 
 const users = [
     { email: 'admin@gmail.com', password: 'admin', role: 'admin', enable: true },
@@ -34,6 +35,85 @@ describe('admin', () => {
             expect(results[1].role).toBe(users[1].role)
             expect(results[1].enable).toBe(users[1].enable)
             expect(results[1].apiCallCount).toBe(1)
+        })
+    })
+
+    describe('toggleBanUserPATCH', () => {
+        beforeEach(() => {
+            return Promise.all(
+                users.map((user) => authService.registerPOST(user.email, user.password)),
+            )
+        })
+
+        it('pass (ban)', async () => {
+            const enable = false
+
+            await authService.loginPOST(users[1].email, users[1].password)
+
+            const result = await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            expect(result.enable).toBe(false)
+            expect(await redis.client.get(result.email)).toBeNull()
+        })
+
+
+        it('pass (ban already)', async () => {
+            const enable = false
+
+            await authService.loginPOST(users[1].email, users[1].password)
+
+            await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            const result = await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            expect(result.enable).toBe(false)
+            expect(await redis.client.get(result.email)).toBeNull()
+        })
+
+        it('pass (ban user not logged in)', async () => {
+            const enable = false
+
+            const result = await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            expect(result.enable).toBe(false)
+            expect(await redis.client.get(result.email)).toBeNull()
+        })
+
+        it('pass (un-ban)', async () => {
+            const enable = true
+
+            await authService.loginPOST(users[1].email, users[1].password)
+
+            const result = await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            expect(result.enable).toBe(true)
+            expect(await redis.client.get(result.email)).not.toBeNull()
+        })
+
+        it('pass (un-ban already)', async () => {
+            const enable = true
+
+            await authService.loginPOST(users[1].email, users[1].password)
+
+            await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            const result = await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            expect(result.enable).toBe(true)
+            expect(await redis.client.get(result.email)).not.toBeNull()
+        })
+
+        it('pass (un-ban user not logged in)', async () => {
+            const enable = true
+
+            const result = await adminService.toggleBanUserPATCH(users[1].email, enable)
+
+            expect(result.enable).toBe(true)
+            expect(await redis.client.get(result.email)).toBeNull()
+        })
+
+        it('failed (user not found)', async () => {
+            await expect(adminService.toggleBanUserPATCH('nouser@gmail.com')).rejects.toThrow(new CustomError('500', 'Failed to toggle enable user'))
         })
     })
 
