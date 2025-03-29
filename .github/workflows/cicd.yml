@@ -79,6 +79,7 @@ jobs:
             echo "SECRET=${{ secrets.SECRET }}" >> .env
             echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
             echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
+            echo "BACKEND_ORIGIN=${{ vars.BACKEND_ORIGIN }}" >> .env
             echo "PORT=${{ vars.PORT }}" >> .env
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
             echo "NODE_ENV=dev" >> .env
@@ -122,6 +123,7 @@ jobs:
             echo "SECRET=${{ secrets.SECRET }}" >> .env
             echo "AUTO_INDEX=${{ vars.AUTO_INDEX }}" >> .env
             echo "FRONTEND_ORIGIN=${{ vars.FRONTEND_ORIGIN }}" >> .env
+            echo "BACKEND_ORIGIN=${{ vars.BACKEND_ORIGIN }}" >> .env
             echo "PORT=${{ vars.PORT }}" >> .env
             echo "TOKEN_EXPIRATION_IN_SEC=${{ vars.TOKEN_EXPIRATION_IN_SEC }}" >> .env
             echo "NODE_ENV=prod" >> .env
