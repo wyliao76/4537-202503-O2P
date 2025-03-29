@@ -1,4 +1,4 @@
-const { CustomError } = require('../utilities')
+const { redis, CustomError } = require('../utilities')
 const usersModel = require('../models/users')
 const tokenModel = require('../models/tokens')
 const recordsModel = require('../models/records')
@@ -76,6 +76,10 @@ const toggleBanUserPATCH = async (email, enable) => {
 
     if (!result || result.enable !== enable) {
         throw new CustomError('500', 'Failed to toggle enable user')
+    }
+
+    if (enable === false) {
+        await redis.client.del(result.email)
     }
 
     return result
