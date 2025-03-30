@@ -37,7 +37,7 @@ app.use(cors({
 // eslint-disable-next-line new-cap
 const router = express.Router()
 
-router.use('/api-doc', swaggerUI.serve, swaggerUI.setup(schema))
+router.use('/doc', swaggerUI.serve, swaggerUI.setup(schema))
 
 router.use('/', authRouter)
 router.use(['/api', '/admin', '/user'], auth.isLogin)

@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   version: 1.0.0
   title: Auth API
-  description: "Fursona"
+  description: "Persona"
 components:
   securitySchemes:
     CookieAuth: # not supported by browser atm
