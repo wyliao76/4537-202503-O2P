@@ -62,7 +62,7 @@ jobs:
       - name: Remove folder and Copy necessary files to the VM
         run: >
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
-            rm -rf ~/fursona
+            rm -rf ~/fursona/src
             mkdir -p ~/fursona
           EOF
 
@@ -106,7 +106,7 @@ jobs:
       - name: Remove folder and Copy necessary files to the VM
         run: >
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DO_HOST }} << 'EOF'
-            rm -rf ~/fursona_prod
+            rm -rf ~/fursona/src
             mkdir -p ~/fursona_prod
           EOF
 
