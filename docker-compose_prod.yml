@@ -38,3 +38,5 @@ services:
       TOKEN_EXPIRATION_IN_SEC: ${TOKEN_EXPIRATION_IN_SEC}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
       BACKEND_ORIGIN: ${BACKEND_ORIGIN}
+    volumes:
+      - /root/fursona_prod/images:/images  # Volume mount
